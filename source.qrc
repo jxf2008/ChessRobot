@@ -1,0 +1,7 @@
+<RCC>
+  <qresource>
+    <file>images/BlackChess.png</file>
+	<file>images/WhiteChess.png</file>
+    <file>images/EmptyChess.png</file>
+  </qresource>
+</RCC>
