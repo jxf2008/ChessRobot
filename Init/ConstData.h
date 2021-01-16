@@ -3,9 +3,13 @@
 
 #include <QDebug>
 
-const QString EMPTY_PIX = ":/images/EmptyChess.png";
-const QString WHITE_PIX = ":/images/WhiteChess.png";
-const QString BLACK_PIX = ":/images/BlackChess.png";
+const QString EMPTY_PICTURE = ":/images/EmptyChess.png";
+const QString WHITE_PICTURE = ":/images/WhiteChess.png";
+const QString BLACK_PICTURE = ":/images/BlackChess.png";
+const QString DEFAULT_AI_PICTURE = ":/images/DefaultAI.png";
+const QString EXE_ICO = ":/images/TitleImage.png";
+
+const QString DATE_FORMAT = "yyyy-MM-dd hh:mm:ss";
 
 enum ChessType
 {
@@ -37,8 +41,47 @@ const int VICTORY_CONDITION = 5;   //胜利条件
 
 const int LOG_SIZE = 50;  //对战双方LOG的大小
 
-const QString PLAYER_NAME = "玩家";
+const QString HUMAN_PLAYER_NAME = "玩家";
 
 const QString DEFAULT_AI_NAME = "默认AI";
 
+#ifdef Q_OS_WIN
+const QString AI_LIBARY_FILE = ".dll";
+#endif
+#ifdef Q_OS_LINUX
+const QString AI_LIBARY_FILE = ".so";
+#endif
+#ifdef Q_OS_MAC
+const QString AI_LIBARY_FILE = ".dylib";
+#endif
+
+typedef int (*CALCULATECHESS)(int* , int , int);
+const QString AI_FUN_NAME = "calculateChess";
+
+const int MISSION_COUNT_ONTPAGE = 10;
 #endif // CONSTDATA_H
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

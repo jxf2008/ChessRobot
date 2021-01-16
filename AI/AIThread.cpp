@@ -1,19 +1,55 @@
-#include "AI/DefaultAIThread.h"
+#include <QLibrary>
+#include "Init/InitBuilder.h"
+#include "AIThread.h"
 
-DefaultAIThread::DefaultAIThread(QObject* parent):
-    QThread (parent)
+class InitBuilder;
+
+AIThread::AIThread(QObject* parent):
+    QThread (parent),
+    aiNameString(DEFAULT_AI_NAME),
+    customAI(nullptr)
 {
 
 }
 
-void DefaultAIThread::initAI(ChessType type , const QList<ChessType> types){
+void AIThread::initAI(ChessType type , const QList<ChessType> types){
     aiChessType = type;
     againstChessType = type == BlackChess ? WhiteChess : BlackChess;
     for(auto A : types)
         currentTypeList.append(A);
 }
 
-void DefaultAIThread::run(){
+void AIThread::setAIName(const QString& nm){
+    aiNameString = nm;
+    if(aiNameString != DEFAULT_AI_NAME){
+        QString dllFilePath = InitBuilder::getInstance().getAIDir() + "/" + aiNameString + AI_LIBARY_FILE;
+        QLibrary loadDll(dllFilePath);
+        customAI = reinterpret_cast<CALCULATECHESS>(loadDll.resolve(AI_FUN_NAME.toStdString().c_str()));
+    }
+}
+
+void AIThread::run(){
+    if(aiNameString != DEFAULT_AI_NAME){
+        int ct[CHESS_COUNT*CHESS_COUNT];
+        for(int i = 0 ; i < CHESS_COUNT * CHESS_COUNT ; ++i)
+            ct[i] = currentTypeList.at(i);
+        int indexs = -1;
+        if(customAI)
+            indexs = customAI(ct,CHESS_COUNT * CHESS_COUNT , aiChessType);
+        emit aiClick(indexs);
+        return;
+    }
+    bool isFirstChess = true;
+    for(auto A : currentTypeList){
+        if(A == ChessType::BlackChess || A == ChessType::WhiteChess){
+            isFirstChess = false;
+            break;
+        }
+    }
+    if(isFirstChess){
+        emit aiClick(CHESS_COUNT * CHESS_COUNT / 2);
+        return;
+    }
     int aiMaxLen = 0;
     int aiLineCount = 0;
     int aiChessIndex = 0;
@@ -52,9 +88,4 @@ void DefaultAIThread::run(){
         emit aiClick(aiChessIndex);
     if(aiMaxLen == againstMaxLen && aiLineCount < againstLineCount)
         emit aiClick(aiChessIndex);
-
 }
-
-
-
-

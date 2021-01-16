@@ -1,3 +1,294 @@
+﻿```c++
+#ifndef CHESSBUTTON_H
+#define CHESSBUTTON_H
+
+#include <QPushButton>
+#include <QMouseEvent>
+#include "Init/ConstData.h"
+
+class ChessButton : public QPushButton
+{
+    Q_OBJECT
+private:
+    int chessNumberInt;
+    ChessType chessType;
+    ChessType userClickType;
+
+    QString emptyPixString;
+    QString whitePixString;
+    QString blackPixString;
+
+    bool allowUserClickBool;
+
+    void setChessPix();
+public:
+    ChessButton(int n ,
+                ChessType userClick = BlackChess,
+                const QString& emptyPix = EMPTY_PICTURE,
+                const QString& whitePix = WHITE_PICTURE,
+                const QString& blackPix = BLACK_PICTURE,
+                QWidget* parent = nullptr);
+    void setChessType(ChessType tp);
+    ChessType getChessType()const;
+    void resetButtonPix(const QString& emptyPix , const QString& whitePix , const QString& blackPix);
+    void setAllowClick(bool fg);
+    bool buttonStatu()const;
+    void setUserClickType(ChessType userType);
+protected:
+    void mousePressEvent(QMouseEvent* event);
+signals:
+    void userHadClicked(int nu);
+};
+
+#endif // CHESSBUTTON_H
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+```c++
+#include "ChessButton.h"
+
+ChessButton::ChessButton(int nu,
+                         ChessType userClick ,
+                         const QString& emptyPix,
+                         const QString& whitePix,
+                         const QString& blackPix,
+                         QWidget* parent):
+    QPushButton (parent),
+    chessNumberInt(nu),
+    chessType (EmptyChess),
+    userClickType (userClick),
+    emptyPixString(emptyPix),
+    whitePixString(whitePix),
+    blackPixString(blackPix),
+    allowUserClickBool(true){
+    setDefault(false);
+}
+
+void ChessButton::setChessPix(){
+    QPixmap pix;
+    if(chessType == EmptyChess)
+        pix.load(emptyPixString);
+    if(chessType == BlackChess)
+        pix.load(blackPixString);
+    if(chessType == WhiteChess)
+        pix.load(whitePixString);
+    int x = size().width();
+    int y = size().height();
+    setIcon(pix.scaled(QSize(x-2,y-2)));
+    setIconSize(QSize(x-2,y-2));
+}
+
+void ChessButton::setChessType(ChessType tp){
+    chessType = tp;
+    setChessPix();
+}
+
+ChessType ChessButton::getChessType()const{
+    return chessType;
+}
+
+void ChessButton::resetButtonPix(const QString& emptyPix , const QString& whitePix , const QString& blackPix){
+    emptyPixString = emptyPix.isEmpty() ? emptyPixString : emptyPix;
+    whitePixString = whitePix.isEmpty() ? whitePixString : whitePix;
+    blackPixString = blackPix.isEmpty() ? blackPixString : blackPix;
+    setChessPix();
+}
+
+void ChessButton::setAllowClick(bool fg){
+    allowUserClickBool = fg;
+}
+
+bool ChessButton::buttonStatu()const{
+    return allowUserClickBool;
+}
+
+void ChessButton::setUserClickType(ChessType userType){
+    userClickType = userType;
+}
+
+void ChessButton::mousePressEvent(QMouseEvent* event){
+    if(chessType == BlackChess || chessType == WhiteChess || !allowUserClickBool)
+        return QPushButton::mousePressEvent(event);
+
+    if(event->button() == Qt::LeftButton){
+        chessType = userClickType;
+        setChessPix();
+        emit userHadClicked(chessNumberInt);
+    }
+    QPushButton::mousePressEvent(event);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+```c++
+#ifndef CHESSMAPWIDGET_H
+#define CHESSMAPWIDGET_H
+
+#include "AI/AIThread.h"
+#include "ChessButton.h"
+#include "ChoosePlayerDialog.h"
+#include "GameReplayDialog.h"
+
+class ChessButton;
+class ChoosePlayerDialog;
+class GameReplayDialog;
+
+class ChessMapWidget : public QWidget
+{
+    Q_OBJECT
+private:
+    bool playingBool;
+
+    ChoosePlayerDialog* choosePlayer_Dialog;
+
+    GameReplayDialog* gameReplay_Dialog;
+
+    QPushButton* whitePlayerName_PushButton;
+    QPushButton* whitePlayerPix_PushButton;
+    QPushButton* blackPlayerName_PushButton;
+    QPushButton* blackPlayerPix_PushButton;
+
+    QLabel* vsLogo_Label;
+
+    QPushButton* begin_PushButton;
+    QPushButton* log_PushButton;
+    QPushButton* recording_PushButton;
+    QPushButton* setting_PushButton;
+
+    QString whitePlayerNameString;
+    QString blackPlayerNameString;
+
+    ChessType currentType;
+    QVector<ChessButton*> allChessVector;
+
+    AIThread* ai_Thread;
+
+    QVector<int> chessStepVector;
+
+    int chessJudgment();
+    void fight();
+    void victory();
+    QString getUserPicture(const QString& userName , ChessType tp)const;
+    void saveGameData(const QString& nm = QString());
+public:
+    explicit ChessMapWidget(QWidget *parent = nullptr);
+private slots:
+    void userClickChess(int number);
+    void aiClickChess(int indexs);
+    void chooseWhitePlayer();
+    void chooseBlackPlayer();
+    void setPlayer(const QString& player , ChessType tp);
+    void beginGame();
+    void initMap();
+    void chooseReplay();
+};
+
+#endif // CHESSMAPWIDGET_H
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+```c++
 #include <QGridLayout>
 #include <QMessageBox>
 #include <QDateTime>
@@ -6,7 +297,6 @@
 #include "ChessMapWidget.h"
 #include "Init/InitBuilder.h"
 #include "Init/ConstData.h"
-#include "Gui/ChessMapWidget.h"
 
 class InitBuilder;
 
@@ -422,3 +712,478 @@ void ChessMapWidget::chooseReplay(){
     for(int i = 0 ; i < cs ; ++i)
         steps.append(999-QStringRef(&stepData,i*3,3).toInt());
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+```c++
+#ifndef CHESSROBERT_H
+#define CHESSROBERT_H
+
+#include <QMainWindow>
+#include "ChessMapWidget.h"
+
+class ChessMapWidget;
+
+class ChessRobert : public QMainWindow
+{
+    Q_OBJECT
+private:
+    ChessMapWidget* chessMap_Widget;
+public:
+    ChessRobert(QWidget *parent = nullptr);
+    ~ChessRobert();
+};
+
+#endif // CHESSROBERT_H
+
+```
+
+```c++
+#include "ChessRobert.h"
+#include "Init/InitBuilder.h"
+
+class InitBuilder;
+
+ChessRobert::ChessRobert(QWidget *parent)
+    : QMainWindow(parent)
+{
+    InitBuilder::getInstance().createFile();
+    setWindowIcon(QIcon(EXE_ICO));
+    chessMap_Widget = new ChessMapWidget;
+    setCentralWidget(chessMap_Widget);
+}
+
+ChessRobert::~ChessRobert()
+{
+
+}
+
+```
+
+```c++
+#ifndef CHOOSEPLAYERDIALOG_H
+#define CHOOSEPLAYERDIALOG_H
+
+#include <QDialog>
+#include <QListWidget>
+#include <QPushButton>
+#include <QLabel>
+#include <QCloseEvent>
+#include "Init/ConstData.h"
+
+class ChoosePlayerDialog : public QDialog
+{
+    Q_OBJECT
+private:
+    ChessType playerType;
+
+    QLabel* warningInfo_Label;
+    QLabel* playerName_Label;
+
+    QListWidget* playerName_ListWidget;
+
+    QPushButton* confirm_PushButton;
+    QPushButton* cancel_PushButton;
+public:
+    ChoosePlayerDialog(QWidget* parent = nullptr);
+    void setCurrentPlayer(const QString& currentPlayer , ChessType tp = ChessType::BlackChess);
+protected:
+    void closeEvent(QCloseEvent* event);
+signals:
+    void selectedPlayer(const QString& currentPlayer , ChessType tp);
+private slots:
+    void choosePlayer();
+    void changePlayer(QListWidgetItem* item);
+    void choosePlayer(QListWidgetItem* item);
+};
+
+#endif // CHOOSEPLAYERDIALOG_H
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+```c++
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include "ChoosePlayerDialog.h"
+#include "Init/InitBuilder.h"
+
+class InitBuilder;
+
+ChoosePlayerDialog::ChoosePlayerDialog(QWidget* parent):QDialog (parent){
+    warningInfo_Label = new QLabel();
+    playerName_Label = new QLabel();
+
+    playerName_ListWidget = new QListWidget();
+
+    confirm_PushButton = new QPushButton(tr("确定"));
+    cancel_PushButton = new QPushButton(tr("取消"));
+
+    playerName_Label->setFixedWidth(LOG_SIZE*3);
+
+    QStringList players;
+    players.append(HUMAN_PLAYER_NAME);
+    players.append(DEFAULT_AI_NAME);
+    players.append(InitBuilder::getInstance().getAIName());
+    QString aiImagePath = InitBuilder::getInstance().getAIPictureDir() + "/";
+    for(auto A : players){
+        QString imgPath = aiImagePath + A + ".png";
+        QFile f(imgPath);
+        if(f.exists())
+            playerName_ListWidget->addItem(new QListWidgetItem(QIcon(imgPath),A));
+        else
+            playerName_ListWidget->addItem(new QListWidgetItem(QIcon(BLACK_PICTURE),A));
+    }
+
+    QHBoxLayout* button_Layout = new QHBoxLayout;
+    button_Layout->addStretch();
+    button_Layout->addWidget(confirm_PushButton);
+    button_Layout->addStretch();
+    button_Layout->addWidget(cancel_PushButton);
+    button_Layout->addStretch();
+    QVBoxLayout* main_Layout = new QVBoxLayout;
+    main_Layout->addWidget(playerName_Label);
+    main_Layout->addWidget(playerName_ListWidget);
+    main_Layout->addLayout(button_Layout);
+    main_Layout->addWidget(warningInfo_Label);
+    setLayout(main_Layout);
+    main_Layout->setSizeConstraint(QLayout::SetFixedSize);
+
+    connect(confirm_PushButton,SIGNAL(clicked()),this,SLOT(choosePlayer()));
+    connect(cancel_PushButton,SIGNAL(clicked()),this,SLOT(close()));
+    connect(playerName_ListWidget,SIGNAL(itemClicked(QListWidgetItem*)),this,SLOT(changePlayer(QListWidgetItem*)));
+    connect(playerName_ListWidget,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(choosePlayer(QListWidgetItem*)));
+
+    warningInfo_Label->setStyleSheet("color:red");
+}
+
+void ChoosePlayerDialog::setCurrentPlayer(const QString& currentPlayer , ChessType tp){
+    playerType = tp;
+    playerName_Label->setText(currentPlayer);
+    int cs = playerName_ListWidget->count();
+    for(int i = 0 ; i < cs ; ++i){
+        QListWidgetItem* item = playerName_ListWidget->item(i);
+        QString imgPath = tp == ChessType::BlackChess ? BLACK_PICTURE : WHITE_PICTURE;
+        QString itemTxt = item->text();
+        if(itemTxt == DEFAULT_AI_NAME)
+            imgPath = DEFAULT_AI_PICTURE;
+        QFile fs(InitBuilder::getInstance().getAIPictureDir() + "/" + itemTxt + ".png");
+        if(fs.exists())
+            imgPath = InitBuilder::getInstance().getAIPictureDir() + "/" + itemTxt + ".png";
+        item->setIcon(QIcon(imgPath));
+    }
+}
+
+void ChoosePlayerDialog::closeEvent(QCloseEvent* event){
+    event->ignore();
+    warningInfo_Label->setText("");
+    hide();
+}
+
+void ChoosePlayerDialog::choosePlayer(){
+    emit selectedPlayer(playerName_Label->text(),playerType);
+    close();
+}
+
+void ChoosePlayerDialog::changePlayer(QListWidgetItem* item){
+    playerName_Label->setText(item->text());
+}
+
+void ChoosePlayerDialog::choosePlayer(QListWidgetItem* item){
+    emit selectedPlayer(item->text(),playerType);
+    close();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+```c++
+#ifndef GAMEREPLAYWIDGET_H
+#define GAMEREPLAYWIDGET_H
+
+#include <QDialog>
+#include <QLabel>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QTableView>
+#include <QCloseEvent>
+
+class GameReplayDialog : public QDialog{
+    Q_OBJECT
+private:
+    QLabel* missionName_Label;
+    QLabel* playerName_Label;
+    QLabel* pageCount_Label;
+
+    QPushButton* search_PushButton;
+    QPushButton* pageUp_PushButton;
+    QPushButton* PageDown_PushButton;
+    QPushButton* confirm_PushButton;
+
+    QLineEdit* missionName_LineEdit;
+    QLineEdit* playerName_LineEdit;
+
+    QTableView* mission_TableView;
+public:
+    explicit GameReplayDialog(QWidget* parent = nullptr);
+protected:
+    void closeEvent(QCloseEvent* event);
+
+signals:
+
+public slots:
+};
+
+#endif // GAMEREPLAYWIDGET_H
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+```c++
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include "GameReplayDialog.h"
+
+GameReplayDialog::GameReplayDialog(QWidget *parent) : QDialog(parent){
+    setWindowTitle(tr("录像"));
+
+    missionName_Label = new QLabel(tr("对局名称"));
+    playerName_Label = new QLabel(tr("玩家名称"));
+    pageCount_Label = new QLabel();
+
+    search_PushButton = new QPushButton(tr("查找"));
+    pageUp_PushButton = new QPushButton(tr("上一页"));
+    PageDown_PushButton = new QPushButton(tr("下一页"));
+    confirm_PushButton = new QPushButton(tr("确定"));
+
+    missionName_LineEdit = new QLineEdit();
+    playerName_LineEdit = new QLineEdit();
+
+    mission_TableView = new QTableView;
+
+    missionName_Label->setAlignment(Qt::AlignCenter);
+    playerName_Label->setAlignment(Qt::AlignCenter);
+
+    missionName_Label->setFixedWidth(100);
+    playerName_Label->setFixedWidth(100);
+    missionName_LineEdit->setFixedWidth(200);
+    playerName_LineEdit->setFixedWidth(200);
+
+    QHBoxLayout* missionName_Layout = new QHBoxLayout;
+    missionName_Layout->addWidget(missionName_Label);
+    missionName_Layout->addWidget(missionName_LineEdit);
+    QHBoxLayout* playerName_Layout = new QHBoxLayout;
+    playerName_Layout->addWidget(playerName_Label);
+    playerName_Layout->addWidget(playerName_LineEdit);
+    QVBoxLayout* search_Layout = new QVBoxLayout;
+    search_Layout->addWidget(search_PushButton,0,Qt::AlignRight);
+    search_Layout->addStretch();
+
+    QVBoxLayout* info_Layout = new QVBoxLayout;
+    info_Layout->addLayout(missionName_Layout);
+    info_Layout->addLayout(playerName_Layout);
+
+    QHBoxLayout* title_Layout = new QHBoxLayout;
+    title_Layout->addLayout(info_Layout);
+    title_Layout->addLayout(search_Layout);
+
+    QHBoxLayout* button_Layout = new QHBoxLayout;
+    button_Layout->addWidget(pageUp_PushButton);
+    button_Layout->addWidget(PageDown_PushButton);
+    button_Layout->addWidget(pageCount_Label);
+    button_Layout->addStretch();
+    button_Layout->addWidget(confirm_PushButton);
+
+    QVBoxLayout* main_Layout = new QVBoxLayout;
+    main_Layout->addLayout(title_Layout);
+    main_Layout->addWidget(mission_TableView);
+    main_Layout->addLayout(button_Layout);
+    setLayout(main_Layout);
+    main_Layout->setSizeConstraint(QLayout::SetFixedSize);
+}
+
+void GameReplayDialog::closeEvent(QCloseEvent* event){
+    event->ignore();
+    hide();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```

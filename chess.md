@@ -1,3 +1,22 @@
+﻿main.c
+```c++
+#include <QApplication>
+#include "GUI/ChessRobert.h"
+
+class ChessRobert;
+
+int main(int argc, char *argv[])
+{
+    QApplication a(argc, argv);
+    ChessRobert w;
+    w.show();
+    return a.exec();
+}
+
+```
+
+ChessRebot.pro
+```shell
 #-------------------------------------------------
 #
 # Project created by QtCreator 2019-12-10T15:52:37
@@ -62,3 +81,19 @@ RC_ICONS = images/MyExe.ico
 
 RESOURCES += \
     source.qrc
+
+LIBS          +=   -LF:/blogCode/TestDll -laddf
+INCLUDEPATH   +=   F:/blogCode/TestDll
+```
+
+```xml
+<RCC>
+  <qresource>
+    <file>images/BlackChess.png</file>
+    <file>images/WhiteChess.png</file>
+    <file>images/EmptyChess.png</file>
+    <file>images/DefaultAI.png</file>
+    <file>images/TitleImage.png</file>
+  </qresource>
+</RCC>
+```

@@ -1,19 +1,24 @@
 #ifndef CHESSMAPWIDGET_H
 #define CHESSMAPWIDGET_H
 
-#include <QLabel>
-#include "AI/DefaultAIThread.h"
+#include "AI/AIThread.h"
 #include "ChessButton.h"
 #include "ChoosePlayerDialog.h"
+#include "GameReplayDialog.h"
 
 class ChessButton;
 class ChoosePlayerDialog;
+class GameReplayDialog;
 
 class ChessMapWidget : public QWidget
 {
     Q_OBJECT
 private:
+    bool playingBool;
+
     ChoosePlayerDialog* choosePlayer_Dialog;
+
+    GameReplayDialog* gameReplay_Dialog;
 
     QPushButton* whitePlayerName_PushButton;
     QPushButton* whitePlayerPix_PushButton;
@@ -22,7 +27,7 @@ private:
 
     QLabel* vsLogo_Label;
 
-    QPushButton* begin_QPushButton;
+    QPushButton* begin_PushButton;
     QPushButton* log_PushButton;
     QPushButton* recording_PushButton;
     QPushButton* setting_PushButton;
@@ -30,18 +35,30 @@ private:
     QString whitePlayerNameString;
     QString blackPlayerNameString;
 
-    ChessType userType;
-    QList<ChessButton*> allChessList;
+    ChessType currentType;
+    QVector<ChessButton*> allChessVector;
+
+    AIThread* ai_Thread;
+
+    QVector<int> chessStepVector;
+
     int chessJudgment();
-    DefaultAIThread* ai1;
+    void fight();
+    void victory();
+    QString getUserPicture(const QString& userName , ChessType tp)const;
+    void saveGameData(const QString& nm = QString());
 public:
     explicit ChessMapWidget(QWidget *parent = nullptr);
 private slots:
-    void userClickChess();
+    void userClickChess(int number);
     void aiClickChess(int indexs);
-    void choosePlayer();
-    void setPlayer(QString whitePlayer , QString blackPlayer);
+    void chooseWhitePlayer();
+    void chooseBlackPlayer();
+    void setPlayer(const QString& player , ChessType tp);
     void beginGame();
+    void initMap();
+    void chooseReplay();
 };
+
 
 #endif // CHESSMAPWIDGET_H

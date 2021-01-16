@@ -1,11 +1,13 @@
 #include "Gui/ChessButton.h"
 
-ChessButton::ChessButton(ChessType userClick ,
+ChessButton::ChessButton(int nu,
+                         ChessType userClick ,
                          const QString& emptyPix,
                          const QString& whitePix,
                          const QString& blackPix,
                          QWidget* parent):
     QPushButton (parent),
+    chessNumberInt(nu),
     chessType (EmptyChess),
     userClickType (userClick),
     emptyPixString(emptyPix),
@@ -13,7 +15,6 @@ ChessButton::ChessButton(ChessType userClick ,
     blackPixString(blackPix),
     allowUserClickBool(true){
     setDefault(false);
-    setStyleSheet("border-style: outset; border-width: 2px;border-color: black;");
 }
 
 void ChessButton::setChessPix(){
@@ -24,8 +25,10 @@ void ChessButton::setChessPix(){
         pix.load(blackPixString);
     if(chessType == WhiteChess)
         pix.load(whitePixString);
-    setIcon(pix.scaled(size()));
-    setIconSize(size());
+    int x = size().width();
+    int y = size().height();
+    setIcon(pix.scaled(QSize(x-2,y-2)));
+    setIconSize(QSize(x-2,y-2));
 }
 
 void ChessButton::setChessType(ChessType tp){
@@ -38,9 +41,9 @@ ChessType ChessButton::getChessType()const{
 }
 
 void ChessButton::resetButtonPix(const QString& emptyPix , const QString& whitePix , const QString& blackPix){
-    emptyPixString = emptyPix;
-    whitePixString = whitePix;
-    blackPixString = blackPix;
+    emptyPixString = emptyPix.isEmpty() ? emptyPixString : emptyPix;
+    whitePixString = whitePix.isEmpty() ? whitePixString : whitePix;
+    blackPixString = blackPix.isEmpty() ? blackPixString : blackPix;
     setChessPix();
 }
 
@@ -52,16 +55,19 @@ bool ChessButton::buttonStatu()const{
     return allowUserClickBool;
 }
 
-void ChessButton::mousePressEvent(QMouseEvent* event)
-{
+void ChessButton::setUserClickType(ChessType userType){
+    userClickType = userType;
+}
+
+void ChessButton::mousePressEvent(QMouseEvent* event){
     if(chessType == BlackChess || chessType == WhiteChess || !allowUserClickBool)
         return QPushButton::mousePressEvent(event);
 
-    if(event->button() == Qt::LeftButton)
-    {
+    if(event->button() == Qt::LeftButton){
         chessType = userClickType;
         setChessPix();
-        emit userHadClicked();
+        emit userHadClicked(chessNumberInt);
     }
     QPushButton::mousePressEvent(event);
 }
+

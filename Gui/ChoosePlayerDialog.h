@@ -6,31 +6,32 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QCloseEvent>
+#include "Init/ConstData.h"
 
 class ChoosePlayerDialog : public QDialog
 {
     Q_OBJECT
 private:
-    QLabel* warningInfo_Label;
-    QLabel* whitePlayerName_Label;
-    QLabel* blackPlayerName_Label;
+    ChessType playerType;
 
-    QListWidget* white_ListWidget;
-    QListWidget* black_ListWidget;
+    QLabel* warningInfo_Label;
+    QLabel* playerName_Label;
+
+    QListWidget* playerName_ListWidget;
 
     QPushButton* confirm_PushButton;
     QPushButton* cancel_PushButton;
 public:
     ChoosePlayerDialog(QWidget* parent = nullptr);
-    void setPlayer(const QList<QString> allNames , QString whitePlayer , QString blackPlayer);
+    void setCurrentPlayer(const QString& currentPlayer , ChessType tp = ChessType::BlackChess);
 protected:
     void closeEvent(QCloseEvent* event);
 signals:
-    void twoPlayer(QString whitePlayer , QString blackPlayer);
+    void selectedPlayer(const QString& currentPlayer , ChessType tp);
 private slots:
-    void chooseTwoPlayer();
-    void changeWhitePlayer(QListWidgetItem* item);
-    void changeBlackPlayer(QListWidgetItem* item);
+    void choosePlayer();
+    void changePlayer(QListWidgetItem* item);
+    void choosePlayer(QListWidgetItem* item);
 };
 
 #endif // CHOOSEPLAYERDIALOG_H

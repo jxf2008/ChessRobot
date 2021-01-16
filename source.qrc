@@ -1,7 +1,9 @@
 <RCC>
   <qresource>
     <file>images/BlackChess.png</file>
-	<file>images/WhiteChess.png</file>
+    <file>images/WhiteChess.png</file>
     <file>images/EmptyChess.png</file>
+    <file>images/DefaultAI.png</file>
+    <file>images/TitleImage.png</file>
   </qresource>
 </RCC>

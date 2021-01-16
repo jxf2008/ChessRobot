@@ -1,23 +1,27 @@
-#ifndef AITHREAD_H
-#define AITHREAD_H
+#ifndef AI1THREAD_H
+#define AI1THREAD_H
 
 #include <QThread>
 #include "AnalysisFunction.h"
 
-class DefaultAIThread : public QThread
+class AIThread : public QThread
 {
     Q_OBJECT
 private:
     QList<ChessType> currentTypeList;
     ChessType aiChessType;
     ChessType againstChessType;
+    QString aiNameString;
+
+    CALCULATECHESS customAI;
 public:
-    DefaultAIThread(QObject* parent = nullptr);
+    AIThread(QObject* parent = nullptr);
     void initAI(ChessType type , const QList<ChessType> types);
+    void setAIName(const QString& nm);
 protected:
     void run();
 signals:
     void aiClick(int indexs);
 };
 
-#endif // AITHREAD_H
+#endif // AI1THREAD_H

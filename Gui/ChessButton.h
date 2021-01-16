@@ -9,6 +9,7 @@ class ChessButton : public QPushButton
 {
     Q_OBJECT
 private:
+    int chessNumberInt;
     ChessType chessType;
     ChessType userClickType;
 
@@ -20,20 +21,22 @@ private:
 
     void setChessPix();
 public:
-    ChessButton(ChessType userClick = BlackChess,
-                const QString& emptyPix = EMPTY_PIX,
-                const QString& whitePix = WHITE_PIX,
-                const QString& blackPix = BLACK_PIX,
+    ChessButton(int n ,
+                ChessType userClick = BlackChess,
+                const QString& emptyPix = EMPTY_PICTURE,
+                const QString& whitePix = WHITE_PICTURE,
+                const QString& blackPix = BLACK_PICTURE,
                 QWidget* parent = nullptr);
     void setChessType(ChessType tp);
     ChessType getChessType()const;
     void resetButtonPix(const QString& emptyPix , const QString& whitePix , const QString& blackPix);
     void setAllowClick(bool fg);
     bool buttonStatu()const;
+    void setUserClickType(ChessType userType);
 protected:
     void mousePressEvent(QMouseEvent* event);
 signals:
-    void userHadClicked();
+    void userHadClicked(int nu);
 };
 
 #endif // CHESSBUTTON_H
