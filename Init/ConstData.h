@@ -59,6 +59,12 @@ typedef int (*CALCULATECHESS)(int* , int , int);
 const QString AI_FUN_NAME = "calculateChess";
 
 const int MISSION_COUNT_ONTPAGE = 10;
+struct GameInfo{
+    QString GameName;
+    QString BlackPlayerName;
+    QString WhitePlayerName;
+};
+
 #endif // CONSTDATA_H
 
 

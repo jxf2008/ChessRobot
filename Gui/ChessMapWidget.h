@@ -5,10 +5,12 @@
 #include "ChessButton.h"
 #include "ChoosePlayerDialog.h"
 #include "GameReplayDialog.h"
+#include "SaveGameDataDialog.h"
 
 class ChessButton;
 class ChoosePlayerDialog;
 class GameReplayDialog;
+class SaveGameDataDialog;
 
 class ChessMapWidget : public QWidget
 {
@@ -19,6 +21,8 @@ private:
     ChoosePlayerDialog* choosePlayer_Dialog;
 
     GameReplayDialog* gameReplay_Dialog;
+
+    SaveGameDataDialog* saveGameData_Dialog;
 
     QPushButton* whitePlayerName_PushButton;
     QPushButton* whitePlayerPix_PushButton;
@@ -32,21 +36,19 @@ private:
     QPushButton* recording_PushButton;
     QPushButton* setting_PushButton;
 
-    QString whitePlayerNameString;
-    QString blackPlayerNameString;
+    QString whitePlayerName;
+    QString blackPlayerName;
 
     ChessType currentType;
-    QVector<ChessButton*> allChessVector;
+    QVector<ChessButton*> allChess;
 
     AIThread* ai_Thread;
-
-    QVector<int> chessStepVector;
 
     int chessJudgment();
     void fight();
     void victory();
     QString getUserPicture(const QString& userName , ChessType tp)const;
-    void saveGameData(const QString& nm = QString());
+    void saveGameData();
 public:
     explicit ChessMapWidget(QWidget *parent = nullptr);
 private slots:

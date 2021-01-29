@@ -65,6 +65,41 @@ void InitBuilder::createFile(){
     db.open();
 
     QSqlQuery sqlQuery;
-    QString sqlStr = "CREATE TABLE IF NOT EXISTS ChessData(Name TEXT , Step TEXT , BlackChess TEXT , WhiteChess TEXT , Date TEXT);";
+    QString sqlStr = "CREATE TABLE IF NOT EXISTS ChessData(Date TEXT,ChessIndex INTEGER, ChessType INTEGER);";
+    sqlQuery.exec(sqlStr);
+    sqlStr = "CREATE TABLE IF NOT EXISTS PlayerData(Date TEXT,BlackPlayerName TEXT , WhitePlayerName TEXT , Winner INTEGER , Notes TEXT);";
     sqlQuery.exec(sqlStr);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

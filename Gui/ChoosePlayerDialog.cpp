@@ -1,6 +1,6 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-#include "GUI/ChoosePlayerDialog.h"
+#include "ChoosePlayerDialog.h"
 #include "Init/InitBuilder.h"
 
 class InitBuilder;

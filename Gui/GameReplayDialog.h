@@ -6,32 +6,57 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QTableView>
+#include <QLabel>
 #include <QCloseEvent>
+#include "Model/MissionDataModel.h"
+
+class MissionDataModel;
 
 class GameReplayDialog : public QDialog{
     Q_OBJECT
 private:
-    QLabel* missionName_Label;
     QLabel* playerName_Label;
     QLabel* pageCount_Label;
 
     QPushButton* search_PushButton;
     QPushButton* pageUp_PushButton;
-    QPushButton* PageDown_PushButton;
+    QPushButton* pageDown_PushButton;
     QPushButton* confirm_PushButton;
 
-    QLineEdit* missionName_LineEdit;
+    QLabel* index_Label;
+
     QLineEdit* playerName_LineEdit;
 
     QTableView* mission_TableView;
+
+    MissionDataModel* missionData_Model;
+
+    void showModelIndex();
 public:
     explicit GameReplayDialog(QWidget* parent = nullptr);
 protected:
     void closeEvent(QCloseEvent* event);
-
-signals:
-
-public slots:
+private slots:
+    void findMissionData();
+    void pageUp();
+    void pageDown();
 };
 
 #endif // GAMEREPLAYWIDGET_H
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

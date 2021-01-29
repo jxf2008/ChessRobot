@@ -16,13 +16,14 @@ ChessMapWidget::ChessMapWidget(QWidget *parent) :
     currentType(ChessType::BlackChess){
     choosePlayer_Dialog = nullptr;
     gameReplay_Dialog = nullptr;
+    saveGameData_Dialog = nullptr;
 
-    whitePlayerNameString = DEFAULT_AI_NAME;
-    blackPlayerNameString = HUMAN_PLAYER_NAME;
+    whitePlayerName = DEFAULT_AI_NAME;
+    blackPlayerName = HUMAN_PLAYER_NAME;
 
-    whitePlayerName_PushButton = new QPushButton(whitePlayerNameString);
+    whitePlayerName_PushButton = new QPushButton(whitePlayerName);
     whitePlayerPix_PushButton = new QPushButton();
-    blackPlayerName_PushButton = new QPushButton(blackPlayerNameString);
+    blackPlayerName_PushButton = new QPushButton(blackPlayerName);
     blackPlayerPix_PushButton = new QPushButton();
 
     vsLogo_Label = new QLabel("<h1><font color=red>VS</font></h1>");
@@ -49,13 +50,13 @@ ChessMapWidget::ChessMapWidget(QWidget *parent) :
     QGridLayout* chess_Layout = new QGridLayout;
     for(int rows = 0 ; rows < CHESS_COUNT ; ++rows){
         for(int cols = 0 ; cols < CHESS_COUNT ; ++cols){
-            allChessVector.append(new ChessButton(rows*CHESS_COUNT+cols));
-            allChessVector.last()->setFixedSize(CHESS_SIZE,CHESS_SIZE);
-            allChessVector.last()->setChessType(ChessType::EmptyChess);
-            allChessVector.last()->setStyleSheet("border: 1px solid black;");
-            allChessVector.last()->setUserClickType(ChessType::BlackChess);
-            connect(allChessVector.last(),SIGNAL(userHadClicked(int)),this,SLOT(userClickChess(int)));
-            chess_Layout->addWidget(allChessVector.last(),rows,cols);
+            allChess.append(new ChessButton(rows*CHESS_COUNT+cols));
+            allChess.last()->setFixedSize(CHESS_SIZE,CHESS_SIZE);
+            allChess.last()->setChessType(ChessType::EmptyChess);
+            allChess.last()->setStyleSheet("border: 1px solid black;");
+            allChess.last()->setUserClickType(ChessType::BlackChess);
+            connect(allChess.last(),SIGNAL(userHadClicked(int)),this,SLOT(userClickChess(int)));
+            chess_Layout->addWidget(allChess.last(),rows,cols);
         }
     }
     chess_Layout->setSpacing(0);
@@ -92,19 +93,19 @@ int ChessMapWidget::chessJudgment(){
     int maxLen = 0;
     for(int rows = 0 ; rows < CHESS_COUNT ; ++rows){
         for(int cols = 0 ; cols < CHESS_COUNT ; ++cols){
-            ChessType tp = allChessVector.at(rows * CHESS_COUNT + cols)->getChessType();
+            ChessType tp = allChess.at(rows * CHESS_COUNT + cols)->getChessType();
             if(tp == EmptyChess)
                 continue;
 
             int lens = 1;
             for(int i = cols + 1 ; i < CHESS_COUNT ; ++i){    //水平方向
-                if(allChessVector.at(rows * CHESS_COUNT + i)->getChessType() == tp)
+                if(allChess.at(rows * CHESS_COUNT + i)->getChessType() == tp)
                     ++lens;
                 else
                     break;
             }
             for(int i = cols - 1 ; i >= 0 ; --i){
-                if(allChessVector.at(rows * CHESS_COUNT + i)->getChessType() == tp)
+                if(allChess.at(rows * CHESS_COUNT + i)->getChessType() == tp)
                     ++lens;
                 else
                     break;
@@ -114,13 +115,13 @@ int ChessMapWidget::chessJudgment(){
 
             lens = 1;
             for(int i = rows + 1 ; i < CHESS_COUNT ; ++i){   //垂直方向
-                if(allChessVector.at(i * CHESS_COUNT + cols)->getChessType() == tp)
+                if(allChess.at(i * CHESS_COUNT + cols)->getChessType() == tp)
                     ++lens;
                 else
                     break;
             }
             for(int i = rows - 1 ; i >= 0 ; --i){
-                if(allChessVector.at(i * CHESS_COUNT + cols)->getChessType() == tp)
+                if(allChess.at(i * CHESS_COUNT + cols)->getChessType() == tp)
                     ++lens;
                 else
                     break;
@@ -130,13 +131,13 @@ int ChessMapWidget::chessJudgment(){
 
             lens = 1;
             for(int c = cols + 1,r = rows + 1 ; (c < CHESS_COUNT)&&(r < CHESS_COUNT); ++c,++r){   //左上<-->右下方向
-                if(allChessVector.at(r * CHESS_COUNT + c)->getChessType() == tp)
+                if(allChess.at(r * CHESS_COUNT + c)->getChessType() == tp)
                     ++lens;
                 else
                     break;
             }
             for(int c = cols - 1,r = rows - 1 ; (c >= 0)&&(r >= 0); --c,--r){
-                if(allChessVector.at(r * CHESS_COUNT + c)->getChessType() == tp)
+                if(allChess.at(r * CHESS_COUNT + c)->getChessType() == tp)
                     ++lens;
                 else
                     break;
@@ -146,13 +147,13 @@ int ChessMapWidget::chessJudgment(){
 
             lens = 1;
             for(int c = cols + 1,r = rows - 1 ; (c < CHESS_COUNT)&&(r >= 0); ++c,--r){   //左下<-->右上方向
-                if(allChessVector.at(r * CHESS_COUNT + c)->getChessType() == tp)
+                if(allChess.at(r * CHESS_COUNT + c)->getChessType() == tp)
                     ++lens;
                 else
                     break;
             }
             for(int c = cols - 1,r = rows + 1 ; (c >= 0)&&(r < CHESS_COUNT); --c,++r){
-                if(allChessVector.at(r * CHESS_COUNT + c)->getChessType() == tp)
+                if(allChess.at(r * CHESS_COUNT + c)->getChessType() == tp)
                     ++lens;
                 else
                     break;
@@ -166,39 +167,39 @@ int ChessMapWidget::chessJudgment(){
 
 void ChessMapWidget::fight(){
     if(currentType == ChessType::BlackChess){
-        if(blackPlayerNameString == HUMAN_PLAYER_NAME){
-            for(auto A : allChessVector)
+        if(blackPlayerName == HUMAN_PLAYER_NAME){
+            for(auto A : allChess)
                 A->setAllowClick(true);
             return;
         }
         QList<ChessType> types;
-        for(auto A : allChessVector)
+        for(auto A : allChess)
             types.append(A->getChessType());
         ai_Thread = new AIThread(this);
         connect(ai_Thread,SIGNAL(aiClick(int)),this,SLOT(aiClickChess(int)));
         ai_Thread->initAI(currentType,types);
-        ai_Thread->setAIName(blackPlayerNameString);
+        ai_Thread->setAIName(blackPlayerName);
         ai_Thread->start();
     }
     if(currentType == ChessType::WhiteChess){
-        if(whitePlayerNameString == HUMAN_PLAYER_NAME){
-            for(auto A : allChessVector)
+        if(whitePlayerName == HUMAN_PLAYER_NAME){
+            for(auto A : allChess)
                 A->setAllowClick(true);
             return;
         }
         QList<ChessType> types;
-        for(auto A : allChessVector)
+        for(auto A : allChess)
             types.append(A->getChessType());
         ai_Thread = new AIThread(this);
         connect(ai_Thread,SIGNAL(aiClick(int)),this,SLOT(aiClickChess(int)));
         ai_Thread->initAI(currentType,types);
-        ai_Thread->setAIName(whitePlayerNameString);
+        ai_Thread->setAIName(whitePlayerName);
         ai_Thread->start();
     }
 }
 
 void ChessMapWidget::victory(){
-    QString vn = currentType == ChessType::BlackChess ? blackPlayerNameString : whitePlayerNameString;
+    QString vn = currentType == ChessType::BlackChess ? blackPlayerName : whitePlayerName;
     QMessageBox msgBox;
     msgBox.setWindowTitle("VECTORY!!");
     msgBox.setText(vn+" Is Winner!!");
@@ -225,27 +226,30 @@ QString ChessMapWidget::getUserPicture(const QString& userName , ChessType tp)co
     return QString();
 }
 
-void ChessMapWidget::saveGameData(const QString& nm){
+void ChessMapWidget::saveGameData(){
     QString gameDate = QDateTime::currentDateTime().toString(DATE_FORMAT);
     QString step;
 
-    for(auto A : chessStepVector)
-        step.append(QString::number(999-A));   //Make sure that every step is a three digit number;
-
     QSqlQuery sqlQuery;
-    QString sqlStr = "INSERT INTO ChessData (Name, Step, BlackChess, WhiteChess,Date) VALUES('NAME','STEP', 'BLACKCHESS', 'WHITECHESS','DATE');";
-    sqlStr.replace("NAME",gameDate);
-    sqlStr.replace("STEP",step);
-    sqlStr.replace("BLACKCHESS",blackPlayerNameString);
-    sqlStr.replace("WHITECHESS",whitePlayerNameString);
-    sqlStr.replace("DATE",nm.isEmpty() ? gameDate : nm);
+    sqlQuery.exec("BEGIN;");
+    for(int i = 0 ; i < allChess.size() ; ++i){
+        QString sqlStr = "INSERT INTO ChessData (Date,ChessIndex, ChessType) VALUES('DATE','INDEX', 'CHESSTYPE');";
+        sqlStr.replace("DATE",gameDate);
+        sqlStr.replace("INDEX",QString::number(i));
+        sqlStr.replace("CHESSTYPE",QString::number(allChess.at(i)->getChessType()));
+        sqlQuery.exec(sqlStr);
+    }
+    sqlQuery.exec("COMMIT;");
+    QString sqlStr = "INSERT INTO PlayerData(Date,BlackPlayerName, WhitePlayerName) VALUES('DATE','BLACKNAME', 'WHITENAME');";
+    sqlStr.replace("DATE",gameDate);
+    sqlStr.replace("BLACKNAME",blackPlayerName);
+    sqlStr.replace("WHITENAME",whitePlayerName);
     sqlQuery.exec(sqlStr);
 }
 
 void ChessMapWidget::userClickChess(int number){
-    for(auto A : allChessVector)
+    for(auto A : allChess)
         A->setAllowClick(false);
-    chessStepVector.append(number);
     int cs = chessJudgment();
     if(cs >= VICTORY_CONDITION){
         victory();
@@ -256,13 +260,12 @@ void ChessMapWidget::userClickChess(int number){
 }
 
 void ChessMapWidget::aiClickChess(int indexs){
-    chessStepVector.append(indexs);
-    if(indexs == -1 || allChessVector.at(indexs)->getChessType() != ChessType::EmptyChess){
+    if(indexs == -1 || allChess.at(indexs)->getChessType() != ChessType::EmptyChess){
         victory();
         return;
     }
 
-    allChessVector.at(indexs)->setChessType(currentType);
+    allChess.at(indexs)->setChessType(currentType);
     int cs = chessJudgment();
     if(cs >= VICTORY_CONDITION){
         victory();
@@ -277,7 +280,7 @@ void ChessMapWidget::chooseWhitePlayer(){
         choosePlayer_Dialog = new ChoosePlayerDialog(this);
         connect(choosePlayer_Dialog,SIGNAL(selectedPlayer(const QString&,ChessType)),this,SLOT(setPlayer(const QString&,ChessType)));
     }
-    choosePlayer_Dialog->setCurrentPlayer(whitePlayerNameString,ChessType::WhiteChess);
+    choosePlayer_Dialog->setCurrentPlayer(whitePlayerName,ChessType::WhiteChess);
     choosePlayer_Dialog->exec();
 }
 
@@ -286,7 +289,7 @@ void ChessMapWidget::chooseBlackPlayer(){
         choosePlayer_Dialog = new ChoosePlayerDialog(this);
         connect(choosePlayer_Dialog,SIGNAL(selectedPlayer(const QString&,ChessType)),this,SLOT(setPlayer(const QString&,ChessType)));
     }
-    choosePlayer_Dialog->setCurrentPlayer(blackPlayerNameString);
+    choosePlayer_Dialog->setCurrentPlayer(blackPlayerName);
     choosePlayer_Dialog->exec();
 }
 
@@ -296,29 +299,29 @@ void ChessMapWidget::setPlayer(const QString& player , ChessType tp){
 
     if(tp == ChessType::BlackChess){
         blackPlayerName_PushButton->setText(player);
-        blackPlayerNameString = player;
+        blackPlayerName = player;
         blackPlayerPix_PushButton->setIcon(QIcon(p.scaled(blackPlayerPix_PushButton->size())));
         blackPlayerPix_PushButton->setIconSize(blackPlayerPix_PushButton->size());
-        for(auto A : allChessVector)
+        for(auto A : allChess)
             A->resetButtonPix(QString(),QString(),imgPath);
     }else if(tp == ChessType::WhiteChess){
         whitePlayerName_PushButton->setText(player);
-        whitePlayerNameString = player;
+        whitePlayerName = player;
         whitePlayerPix_PushButton->setIcon(QIcon(p.scaled(whitePlayerPix_PushButton->size())));
         whitePlayerPix_PushButton->setIconSize(whitePlayerPix_PushButton->size());
-        for(auto A : allChessVector)
+        for(auto A : allChess)
             A->resetButtonPix(QString(),imgPath,QString());
     }
     if(player == HUMAN_PLAYER_NAME){
-        for(auto A : allChessVector)
+        for(auto A : allChess)
             A->setUserClickType(tp);
     }
 }
 
 void ChessMapWidget::beginGame(){
-    bool hasHum = blackPlayerNameString == HUMAN_PLAYER_NAME || whitePlayerNameString == HUMAN_PLAYER_NAME;
-    bool samePlayer = blackPlayerNameString == whitePlayerNameString;
-    for(auto A : allChessVector)
+    bool hasHum = blackPlayerName == HUMAN_PLAYER_NAME || whitePlayerName == HUMAN_PLAYER_NAME;
+    bool samePlayer = blackPlayerName == whitePlayerName;
+    for(auto A : allChess)
         A->setAllowClick(hasHum && !samePlayer);
 
     if(samePlayer){
@@ -349,7 +352,7 @@ void ChessMapWidget::initMap(){
     if(playingBool){
         QMessageBox msgBox;
         msgBox.setText(tr("结束游戏？"));
-        msgBox.setInformativeText(tr("当前游戏正在进行中，是否立刻结束？"));
+        msgBox.setInformativeText(tr("当前游戏尚未保存，是否立刻结束？"));
         msgBox.setStandardButtons(QMessageBox::Save|QMessageBox::SaveAll|QMessageBox::Cancel);
         msgBox.button(QMessageBox::Save)->setText(tr(" 结束并保存本次对局 "));
         msgBox.button(QMessageBox::SaveAll)->setText(tr(" 结束不保存 "));
@@ -359,43 +362,41 @@ void ChessMapWidget::initMap(){
         int btn = msgBox.exec();
         switch (btn) {
             case QMessageBox::Save:{
+                saveGameData();
                 playingBool = false;
                 begin_PushButton->setEnabled(true);
-                for(auto A : allChessVector){
+                for(auto A : allChess){
                     A->setChessType(ChessType::EmptyChess);
                     A->setAllowClick(true);
                 }
-                saveGameData();
                 break;
             }
             case QMessageBox::SaveAll:{
                 playingBool = false;
                 begin_PushButton->setEnabled(true);
-                for(auto A : allChessVector){
+                for(auto A : allChess){
                     A->setChessType(ChessType::EmptyChess);
                     A->setAllowClick(true);
                 }
-                chessStepVector.clear();
                 break;
             }
             case QMessageBox::Cancel:break;
         }
     }
-    chessStepVector.clear();
 
     currentType = ChessType::BlackChess;
-    whitePlayerNameString = whitePlayerName_PushButton->text();
-    blackPlayerNameString = blackPlayerName_PushButton->text();
+    whitePlayerName = whitePlayerName_PushButton->text();
+    blackPlayerName = blackPlayerName_PushButton->text();
 
-    QString blackImage = getUserPicture(blackPlayerNameString,ChessType::BlackChess);
-    QString whiteImage = getUserPicture(whitePlayerNameString,ChessType::WhiteChess);
+    QString blackImage = getUserPicture(blackPlayerName,ChessType::BlackChess);
+    QString whiteImage = getUserPicture(whitePlayerName,ChessType::WhiteChess);
 
     whitePlayerPix_PushButton->setIcon(QIcon(QPixmap(whiteImage).scaled(whitePlayerPix_PushButton->size())));
     whitePlayerPix_PushButton->setIconSize(whitePlayerPix_PushButton->size());
     blackPlayerPix_PushButton->setIcon(QIcon(QPixmap(blackImage).scaled(blackPlayerPix_PushButton->size())));
     blackPlayerPix_PushButton->setIconSize(blackPlayerPix_PushButton->size());
 
-    for(auto A : allChessVector){
+    for(auto A : allChess){
         A->setChessType(ChessType::EmptyChess);
         A->resetButtonPix(QString(),whiteImage,blackImage);
         A->setAllowClick(false);
@@ -403,22 +404,7 @@ void ChessMapWidget::initMap(){
 }
 
 void ChessMapWidget::chooseReplay(){
-    if(gameReplay_Dialog == nullptr){
+    if(gameReplay_Dialog == nullptr)
         gameReplay_Dialog = new GameReplayDialog(this);
-        gameReplay_Dialog->exec();
-    }
-    QString bName,wName,stepData,playNm;
-    QSqlQuery sqlQuery;
-    QString sqlStr = "SELECT Name , Step, BlackChess , WhiteChess FROM ChessData;";
-    sqlQuery.exec(sqlStr);
-    while(sqlQuery.next()){
-        playNm = sqlQuery.value("Name").toString();
-        stepData = sqlQuery.value("Step").toString();
-        bName = sqlQuery.value("BlackChess").toString();
-        wName = sqlQuery.value("WhiteChess").toString();
-    }
-    QVector<int> steps;
-    int cs = stepData.length() / 3;
-    for(int i = 0 ; i < cs ; ++i)
-        steps.append(999-QStringRef(&stepData,i*3,3).toInt());
+    gameReplay_Dialog->exec();
 }
