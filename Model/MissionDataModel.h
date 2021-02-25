@@ -3,8 +3,7 @@
 
 #include <QAbstractTableModel>
 
-class MissionDataModel : public QAbstractTableModel
-{
+class MissionDataModel : public QAbstractTableModel{
     Q_OBJECT
 private:
     QVector<QString> titles;
