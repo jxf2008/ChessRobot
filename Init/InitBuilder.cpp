@@ -65,9 +65,9 @@ void InitBuilder::createFile(){
     db.open();
 
     QSqlQuery sqlQuery;
-    QString sqlStr = "CREATE TABLE IF NOT EXISTS ChessData(Date TEXT,ChessIndex INTEGER, ChessType INTEGER);";
+    QString sqlStr = "CREATE TABLE IF NOT EXISTS ChessData(MissionName TEXT,ChessIndex INTEGER, ChessType INTEGER , Date TEXT);";
     sqlQuery.exec(sqlStr);
-    sqlStr = "CREATE TABLE IF NOT EXISTS PlayerData(Date TEXT,BlackPlayerName TEXT , WhitePlayerName TEXT , Winner INTEGER , Notes TEXT);";
+    sqlStr = "CREATE TABLE IF NOT EXISTS PlayerData(MissionName TEXT , BlackPlayerName TEXT , WhitePlayerName TEXT , Winner INTEGER ，Date TEXT);";
     sqlQuery.exec(sqlStr);
 }
 

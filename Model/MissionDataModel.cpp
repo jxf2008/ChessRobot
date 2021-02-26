@@ -6,9 +6,10 @@ MissionDataModel::MissionDataModel(QObject* parent):QAbstractTableModel (parent)
                                                     dates(MISSION_COUNT_ONTPAGE,""),
                                                     blackPlayerNames(MISSION_COUNT_ONTPAGE,""),
                                                     whitePlayerNames(MISSION_COUNT_ONTPAGE,""){
-    titles.append(tr("日期"));
+    titles.append(tr("对局名称"));
     titles.append(tr("黑棋"));
     titles.append(tr("白棋"));
+    titles.append(tr("日期"));
 }
 
 int MissionDataModel::rowCount(const QModelIndex& index)const{
@@ -51,29 +52,54 @@ QVariant MissionDataModel::headerData(int sec , Qt::Orientation orientation , in
     return QVariant();
 }
 
-void MissionDataModel::searchData(const QString& playerNm){
+void MissionDataModel::searchData(const QString& missionNm , const QString& playerNm , const QString& d , int offset){
+    currentMissionName = missionNm;
     currentPlayerName = playerNm;
-    QString sqlStr = "SELECT Date , BlackPlayerName , WhitePlayerName FROM PlayerData WHERE ";
-    sqlStr += "(CONDITION);";
-    if(currentPlayerName.isEmpty())
-        sqlStr.replace("CONDITION","0=0");
-    else
-        sqlStr.replace("CONDITION","BlackPlayerName = '"+currentPlayerName+"' OR WhitePlayerName = '"+currentPlayerName+"'");
+    currentDate = d;
+
+    QString sqlStr = "SELECT MissionName , BlackPlayerName , WhitePlayerName , Date FROM PlayerData WHERE 0=0 ";
+    sqlStr += "AND CD0 AND CD1 AND CD2 LIMIT LIM0 OFFSET OS0;";
+    QString cd0 = missionNm.isEmpty() ? "0=0" : "MissionName='"+missionNm+"'";
+    QString cd1 = playerNm.isEmpty() ? "0=0" : "(BlackPlayerName='"+missionNm+"' OR WhitePlayerName='"+missionNm+"')";
+    QString cd2 = d.isEmpty() ? "0=0" : "Date='"+d+"'";
+    QString lim0 = QString::number(MISSION_COUNT_ONTPAGE);
+    QString os0 = QString::number(offset);
+    sqlStr.replace("CD0",cd0);
+    sqlStr.replace("CD1",cd1);
+    sqlStr.replace("CD2",cd2);
+    sqlStr.replace("LIM0",lim0);
+    sqlStr.replace("OS0",os0);
 
     QSqlQuery sqlQuery;
     sqlQuery.exec(sqlStr);
 
     beginResetModel();
-    dates.clear();
+    missionNames.clear();
     blackPlayerNames.clear();
     whitePlayerNames.clear();
+    dates.clear();
     while (sqlQuery.next()) {
-        dates.append(sqlQuery.value("Date").toString());
+        missionNames.append(sqlQuery.value("MissionName").toString());
         blackPlayerNames.append(sqlQuery.value("BlackPlayerName").toString());
         whitePlayerNames.append(sqlQuery.value("WhitePlayerName").toString());
+        dates.append(sqlQuery.value("Date").toString());
     }
     endResetModel();
-    dataCount = dates.size();
+}
+
+int MissionDataModel::getDataCount(){
+    QString sqlStr = "SELECT MissionName , BlackPlayerName , WhitePlayerName , Date FROM PlayerData WHERE 0=0 ";
+    sqlStr += "AND CD0 AND CD1 AND CD2;";
+    QString cd0 = currentMissionName.isEmpty() ? "0=0" : "MissionName='"+currentMissionName+"'";
+    QString cd1 = currentPlayerName.isEmpty() ? "0=0" : "(BlackPlayerName='"+currentPlayerName+"' OR WhitePlayerName='"+currentPlayerName+"')";
+    QString cd2 = currentDate.isEmpty() ? "0=0" : "Date='"+currentDate+"'";
+    sqlStr.replace("CD0",cd0);
+    sqlStr.replace("CD1",cd1);
+    sqlStr.replace("CD2",cd2);
+
+    QSqlQuery sqlQuery;
+    sqlQuery.exec(sqlStr);
+    return sqlQuery.size();
 }
 
 void MissionDataModel::clearModel(){
@@ -81,8 +107,8 @@ void MissionDataModel::clearModel(){
     dates.clear();
     blackPlayerNames.clear();
     whitePlayerNames.clear();
-    dataCount = 0;
     currentOffSet = 0;
+    dataCount = 0;
     endResetModel();
 }
 
@@ -91,6 +117,7 @@ void MissionDataModel::pageDown(){
         return;
     beginResetModel();
     ++currentOffSet;
+    searchData(currentMissionName,currentPlayerName,currentDate,currentOffSet);
     endResetModel();
 }
 
@@ -99,6 +126,7 @@ void MissionDataModel::pageUp(){
         return;
     beginResetModel();
     --currentOffSet;
+    searchData(currentMissionName,currentPlayerName,currentDate,currentOffSet);
     endResetModel();
 }
 

@@ -8,26 +8,70 @@ class MissionDataModel : public QAbstractTableModel{
 private:
     QVector<QString> titles;
 
-    QVector<QString> dates;
+    QVector<QString> missionNames;
     QVector<QString> blackPlayerNames;
     QVector<QString> whitePlayerNames;
+    QVector<QString> dates;
+
+    QString currentMissionName = "";
+    QString currentPlayerName = "";
+    QString currentDate = "";
 
     int currentOffSet = 0;
     int dataCount = 0;
-
-    QString currentPlayerName = QString();
 public:
     MissionDataModel(QObject* parent = nullptr);
     int rowCount(const QModelIndex& index)const;
     int columnCount(const QModelIndex& index)const;
     QVariant data(const QModelIndex& index , int role)const;
     QVariant headerData(int sec , Qt::Orientation orientation , int role)const;
-    void searchData(const QString& playerNm = QString());
+    void searchData(const QString& missionNm = QString() , const QString& playerNm = QString() , const QString& d = QString() , int offset = 0);
     int getCurrentOffset()const{return currentOffSet;}
-    int getDataCount()const{return dataCount;}
+    int getDataCount();
     void clearModel();
 public slots:
     void pageUp();
     void pageDown();
 };
 #endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

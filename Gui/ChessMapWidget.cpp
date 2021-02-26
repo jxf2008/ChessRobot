@@ -1,8 +1,11 @@
 #include <QGridLayout>
-#include <QMessageBox>
 #include <QDateTime>
 #include <QSqlQuery>
 #include <QStringRef>
+#include <QInputDialog>
+#include <QMessageBox>
+#include <QDir>
+#include <QLineEdit>
 #include "ChessMapWidget.h"
 #include "Init/InitBuilder.h"
 #include "Init/ConstData.h"
@@ -350,37 +353,16 @@ void ChessMapWidget::beginGame(){
 
 void ChessMapWidget::initMap(){
     if(playingBool){
-        QMessageBox msgBox;
-        msgBox.setText(tr("结束游戏？"));
-        msgBox.setInformativeText(tr("当前游戏尚未保存，是否立刻结束？"));
-        msgBox.setStandardButtons(QMessageBox::Save|QMessageBox::SaveAll|QMessageBox::Cancel);
-        msgBox.button(QMessageBox::Save)->setText(tr(" 结束并保存本次对局 "));
-        msgBox.button(QMessageBox::SaveAll)->setText(tr(" 结束不保存 "));
-        msgBox.button(QMessageBox::Cancel)->setText(tr(" 退出 "));
-        msgBox.setIcon(QMessageBox::Question);
-        msgBox.setDefaultButton(QMessageBox::Cancel);
-        int btn = msgBox.exec();
-        switch (btn) {
-            case QMessageBox::Save:{
-                saveGameData();
-                playingBool = false;
-                begin_PushButton->setEnabled(true);
-                for(auto A : allChess){
-                    A->setChessType(ChessType::EmptyChess);
-                    A->setAllowClick(true);
-                }
-                break;
-            }
-            case QMessageBox::SaveAll:{
-                playingBool = false;
-                begin_PushButton->setEnabled(true);
-                for(auto A : allChess){
-                    A->setChessType(ChessType::EmptyChess);
-                    A->setAllowClick(true);
-                }
-                break;
-            }
-            case QMessageBox::Cancel:break;
+        QString gameDate = QDateTime::currentDateTime().toString(DATE_FORMAT);
+        bool customNm = true;
+        QString resTxt = QInputDialog::getText(this,tr("对局名称"),gameDate,QLineEdit::Normal,QDir::home().dirName(),&customNm);
+        if(customNm && !resTxt.isEmpty())saveGameData();
+
+        playingBool = false;
+        begin_PushButton->setEnabled(true);
+        for(auto A : allChess){
+            A->setChessType(ChessType::EmptyChess);
+            A->setAllowClick(true);
         }
     }
 
