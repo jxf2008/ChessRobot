@@ -1,5 +1,5 @@
 #include "ChessRobert.h"
-#include "Init/InitBuilder.h"
+#include "InitBuilder.h"
 
 class InitBuilder;
 

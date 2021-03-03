@@ -28,32 +28,32 @@ CONFIG += c++11
 QT += sql
 
 SOURCES += \
-        AI/AnalysisFunction.cpp \
-        AI/AIThread.cpp \
-        GUI/ChessButton.cpp \
-        GUI/ChessMapWidget.cpp \
-        GUI/ChoosePlayerDialog.cpp \
-        GUI/GameReplayDialog.cpp \
-        Model/MissionDataModel.cpp \
-        GUI/SaveGameDataDialog.cpp \
+        AnalysisFunction.cpp \
+        AIThread.cpp \
+        ChessButton.cpp \
+        ChessMapWidget.cpp \
+        ChoosePlayerDialog.cpp \
+        GameReplayDialog.cpp \
+        MissionDataModel.cpp \
+        SaveGameDataDialog.cpp \
         main.cpp \
-        GUI/ChessRobert.cpp \
-        Init/InitBuilder.cpp
+        ChessRobert.cpp \
+        InitBuilder.cpp
 
 HEADERS += \
-        AI/AnalysisFunction.h \
-        AI/AIThread.h \
-        GUI/ChessButton.h \
-        GUI/ChessMapWidget.h \
-        GUI/ChessRobert.h \
-        GUI/ChoosePlayerDialog.h \
+        AnalysisFunction.h \
+        AIThread.h \
+        ChessButton.h \
+        ChessMapWidget.h \
+        ChessRobert.h \
+        ChoosePlayerDialog.h \
         ConstData.h \
-        GUI/GameReplayDialog.h \
-        Init/ConstData.h \
-        Init/InitBuilder.h \
-        Init/ConstData.h \
-        Model/MissionDataModel.h \
-        GUI/SaveGameDataDialog.h
+        GameReplayDialog.h \
+        ConstData.h \
+        InitBuilder.h \
+        ConstData.h \
+        MissionDataModel.h \
+        SaveGameDataDialog.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

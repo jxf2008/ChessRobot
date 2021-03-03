@@ -3,7 +3,7 @@
 
 #include <QPushButton>
 #include <QMouseEvent>
-#include "Init/ConstData.h"
+#include "ConstData.h"
 
 class ChessButton : public QPushButton
 {

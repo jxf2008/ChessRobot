@@ -1,7 +1,11 @@
+#ifdef MSVC
+#pragma  execution_character_set("utf-8")
+#endif
+
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include "ChoosePlayerDialog.h"
-#include "Init/InitBuilder.h"
+#include "InitBuilder.h"
 
 class InitBuilder;
 

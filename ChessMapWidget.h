@@ -1,7 +1,7 @@
 #ifndef CHESSMAPWIDGET_H
 #define CHESSMAPWIDGET_H
 
-#include "AI/AIThread.h"
+#include "AIThread.h"
 #include "ChessButton.h"
 #include "ChoosePlayerDialog.h"
 #include "GameReplayDialog.h"

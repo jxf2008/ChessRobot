@@ -1,11 +1,15 @@
+#ifdef MSVC
+#pragma  execution_character_set("utf-8")
+#endif
+
 #include <QSqlQuery>
-#include <Init/ConstData.h>
-#include "Model/MissionDataModel.h"
+#include <ConstData.h>
+#include "MissionDataModel.h"
 
 MissionDataModel::MissionDataModel(QObject* parent):QAbstractTableModel (parent),
-                                                    dates(MISSION_COUNT_ONTPAGE,""),
                                                     blackPlayerNames(MISSION_COUNT_ONTPAGE,""),
-                                                    whitePlayerNames(MISSION_COUNT_ONTPAGE,""){
+                                                    whitePlayerNames(MISSION_COUNT_ONTPAGE,""),
+                                                    dates(MISSION_COUNT_ONTPAGE,""){
     titles.append(tr("对局名称"));
     titles.append(tr("黑棋"));
     titles.append(tr("白棋"));

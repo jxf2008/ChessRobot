@@ -6,7 +6,7 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QCloseEvent>
-#include "Init/ConstData.h"
+#include "ConstData.h"
 
 class ChoosePlayerDialog : public QDialog
 {

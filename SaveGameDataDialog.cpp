@@ -1,3 +1,7 @@
+#ifdef MSVC
+#pragma  execution_character_set("utf-8")
+#endif
+
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include "SaveGameDataDialog.h"

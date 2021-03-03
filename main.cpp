@@ -1,4 +1,4 @@
-#include "Gui/ChessRobert.h"
+#include "ChessRobert.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])

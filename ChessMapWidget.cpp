@@ -1,3 +1,7 @@
+#ifdef MSVC
+#pragma  execution_character_set("utf-8")
+#endif
+
 #include <QGridLayout>
 #include <QDateTime>
 #include <QSqlQuery>
@@ -7,9 +11,9 @@
 #include <QDir>
 #include <QLineEdit>
 #include "ChessMapWidget.h"
-#include "Init/InitBuilder.h"
-#include "Init/ConstData.h"
-#include "Gui/ChessMapWidget.h"
+#include "InitBuilder.h"
+#include "ConstData.h"
+#include "ChessMapWidget.h"
 
 class InitBuilder;
 

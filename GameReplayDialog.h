@@ -10,7 +10,7 @@
 #include <QCloseEvent>
 #include <QDateEdit>
 #include <QGroupBox>
-#include "Model/MissionDataModel.h"
+#include "MissionDataModel.h"
 
 class MissionDataModel;
 

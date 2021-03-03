@@ -1,7 +1,7 @@
 #ifndef ANALYSISFUNCTION_H
 #define ANALYSISFUNCTION_H
 
-#include "Init/ConstData.h"
+#include "ConstData.h"
 
 int getChessDetail(const QList<ChessType>& currentTypeList , ChessDetail& chessDetail , int row , int col, ChessType chessType , int len = VICTORY_CONDITION);
 int maxChessLen(const ChessDetail& chessDetail , int& maxLen , int& counts);

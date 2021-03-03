@@ -1,8 +1,12 @@
+#ifdef MSVC
+#pragma  execution_character_set("utf-8")
+#endif
+
 #include <QHeaderView>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include "GameReplayDialog.h"
-#include "Init/ConstData.h"
+#include "ConstData.h"
 
 GameReplayDialog::GameReplayDialog(QWidget *parent) : QDialog(parent){
     setWindowTitle(tr("录像"));

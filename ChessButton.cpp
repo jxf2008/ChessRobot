@@ -1,4 +1,4 @@
-#include "Gui/ChessButton.h"
+#include "ChessButton.h"
 
 ChessButton::ChessButton(int nu,
                          ChessType userClick ,
