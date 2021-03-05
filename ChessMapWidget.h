@@ -17,6 +17,7 @@ class ChessMapWidget : public QWidget
     Q_OBJECT
 private:
     bool playingBool;
+    bool enterMissionName = false;
 
     ChoosePlayerDialog* choosePlayer_Dialog;
 
@@ -32,9 +33,7 @@ private:
     QLabel* vsLogo_Label;
 
     QPushButton* begin_PushButton;
-    QPushButton* log_PushButton;
     QPushButton* recording_PushButton;
-    QPushButton* setting_PushButton;
 
     QString whitePlayerName;
     QString blackPlayerName;

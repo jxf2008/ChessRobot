@@ -1,5 +1,7 @@
 #include "ChessButton.h"
 
+int ChessButton::stepCount = -1;
+
 ChessButton::ChessButton(int nu,
                          ChessType userClick ,
                          const QString& emptyPix,
@@ -7,6 +9,7 @@ ChessButton::ChessButton(int nu,
                          const QString& blackPix,
                          QWidget* parent):
     QPushButton (parent),
+    chessStep(-1),
     chessNumberInt(nu),
     chessType (EmptyChess),
     userClickType (userClick),
@@ -19,12 +22,10 @@ ChessButton::ChessButton(int nu,
 
 void ChessButton::setChessPix(){
     QPixmap pix;
-    if(chessType == EmptyChess)
-        pix.load(emptyPixString);
-    if(chessType == BlackChess)
-        pix.load(blackPixString);
-    if(chessType == WhiteChess)
-        pix.load(whitePixString);
+    if (chessType == EmptyChess) pix.load(emptyPixString);
+    if (chessType == BlackChess) pix.load(blackPixString);
+    if (chessType == WhiteChess) pix.load(whitePixString);
+
     int x = size().width();
     int y = size().height();
     setIcon(pix.scaled(QSize(x-2,y-2)));
@@ -32,6 +33,13 @@ void ChessButton::setChessPix(){
 }
 
 void ChessButton::setChessType(ChessType tp){
+    if (tp != ChessType::EmptyChess) {
+        ++stepCount;
+        currentStep = stepCount;
+    }else {
+        stepCount = -1;
+        currentStep = -1;
+    }
     chessType = tp;
     setChessPix();
 }
@@ -64,6 +72,8 @@ void ChessButton::mousePressEvent(QMouseEvent* event){
         return QPushButton::mousePressEvent(event);
 
     if(event->button() == Qt::LeftButton){
+        ++stepCount;
+        currentStep = stepCount;
         chessType = userClickType;
         setChessPix();
         emit userHadClicked(chessNumberInt);

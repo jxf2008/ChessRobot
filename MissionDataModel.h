@@ -17,7 +17,7 @@ private:
     QString currentPlayerName = "";
     QString currentDate = "";
 
-    int currentOffSet = 0;
+    int currentPageNumber = 1;
     int dataCount = 0;
 public:
     MissionDataModel(QObject* parent = nullptr);
@@ -26,7 +26,7 @@ public:
     QVariant data(const QModelIndex& index , int role)const;
     QVariant headerData(int sec , Qt::Orientation orientation , int role)const;
     void searchData(const QString& missionNm = QString() , const QString& playerNm = QString() , const QString& d = QString() , int offset = 0);
-    int getCurrentOffset()const{return currentOffSet;}
+    int getCurrentPageNumber()const{return currentPageNumber;}
     int getDataCount();
     void clearModel();
 public slots:

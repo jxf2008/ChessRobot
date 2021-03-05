@@ -31,15 +31,18 @@ QVariant MissionDataModel::data(const QModelIndex& index , int role)const{
         return QVariant();
 
     if(role == Qt::DisplayRole){
+        int currentOffSet = currentPageNumber - 1;
         int r = index.row();
         int c = index.column();
         if((r + currentOffSet * MISSION_COUNT_ONTPAGE) >= dates.size())
             return QVariant();
-        if(c == 1)
+        if (c == 0)
+            return QVariant(missionNames.at(r + currentOffSet * MISSION_COUNT_ONTPAGE));
+        if (c == 1)
             return QVariant(blackPlayerNames.at(r + currentOffSet * MISSION_COUNT_ONTPAGE));
-        if(c == 2)
+        if (c == 2)
             return QVariant(whitePlayerNames.at(r + currentOffSet * MISSION_COUNT_ONTPAGE));
-        if(c == 0)
+        if (c == 3)
             return QVariant(dates.at(r + currentOffSet * MISSION_COUNT_ONTPAGE));
     }
     if(role == Qt::TextAlignmentRole)
@@ -62,17 +65,16 @@ void MissionDataModel::searchData(const QString& missionNm , const QString& play
     currentDate = d;
 
     QString sqlStr = "SELECT MissionName , BlackPlayerName , WhitePlayerName , Date FROM PlayerData WHERE 0=0 ";
-    sqlStr += "AND CD0 AND CD1 AND CD2 LIMIT LIM0 OFFSET OS0;";
+    sqlStr += "AND CD0 AND CD1 AND CD2 LIMIT LIM0 ,10;";
     QString cd0 = missionNm.isEmpty() ? "0=0" : "MissionName='"+missionNm+"'";
     QString cd1 = playerNm.isEmpty() ? "0=0" : "(BlackPlayerName='"+missionNm+"' OR WhitePlayerName='"+missionNm+"')";
     QString cd2 = d.isEmpty() ? "0=0" : "Date='"+d+"'";
-    QString lim0 = QString::number(MISSION_COUNT_ONTPAGE);
-    QString os0 = QString::number(offset);
+    QString lim0 = QString::number(MISSION_COUNT_ONTPAGE * (currentPageNumber-1));
     sqlStr.replace("CD0",cd0);
     sqlStr.replace("CD1",cd1);
     sqlStr.replace("CD2",cd2);
     sqlStr.replace("LIM0",lim0);
-    sqlStr.replace("OS0",os0);
+    qDebug() << sqlStr;
 
     QSqlQuery sqlQuery;
     sqlQuery.exec(sqlStr);
@@ -92,18 +94,13 @@ void MissionDataModel::searchData(const QString& missionNm , const QString& play
 }
 
 int MissionDataModel::getDataCount(){
-    QString sqlStr = "SELECT MissionName , BlackPlayerName , WhitePlayerName , Date FROM PlayerData WHERE 0=0 ";
-    sqlStr += "AND CD0 AND CD1 AND CD2;";
-    QString cd0 = currentMissionName.isEmpty() ? "0=0" : "MissionName='"+currentMissionName+"'";
-    QString cd1 = currentPlayerName.isEmpty() ? "0=0" : "(BlackPlayerName='"+currentPlayerName+"' OR WhitePlayerName='"+currentPlayerName+"')";
-    QString cd2 = currentDate.isEmpty() ? "0=0" : "Date='"+currentDate+"'";
-    sqlStr.replace("CD0",cd0);
-    sqlStr.replace("CD1",cd1);
-    sqlStr.replace("CD2",cd2);
-
+    QString sqlStr = "SELECT MissionName  FROM PlayerData;";
     QSqlQuery sqlQuery;
     sqlQuery.exec(sqlStr);
-    return sqlQuery.size();
+    dataCount = 0;
+    while (sqlQuery.next()) ++dataCount;
+    dataCount = dataCount % MISSION_COUNT_ONTPAGE == 0 ? dataCount / MISSION_COUNT_ONTPAGE : dataCount / MISSION_COUNT_ONTPAGE + 1;
+    return dataCount;
 }
 
 void MissionDataModel::clearModel(){
@@ -111,27 +108,28 @@ void MissionDataModel::clearModel(){
     dates.clear();
     blackPlayerNames.clear();
     whitePlayerNames.clear();
-    currentOffSet = 0;
+    missionNames.clear();
+    currentPageNumber = 1;
     dataCount = 0;
     endResetModel();
 }
 
 void MissionDataModel::pageDown(){
-    if((currentOffSet+1)* MISSION_COUNT_ONTPAGE >= dataCount)
+    qDebug() << "currentPageNumber:" << currentPageNumber;
+    qDebug() << "dataCount:" << dataCount;
+    if(currentPageNumber = dataCount)
         return;
-    beginResetModel();
-    ++currentOffSet;
-    searchData(currentMissionName,currentPlayerName,currentDate,currentOffSet);
-    endResetModel();
+    ++currentPageNumber;
+    searchData(currentMissionName,currentPlayerName,currentDate, currentPageNumber);
 }
 
 void MissionDataModel::pageUp(){
-    if(currentOffSet == 0)
+    qDebug() << "currentPageNumber:" << currentPageNumber;
+    qDebug() << "dataCount:" << dataCount;
+    if(currentPageNumber == 1)
         return;
-    beginResetModel();
-    --currentOffSet;
-    searchData(currentMissionName,currentPlayerName,currentDate,currentOffSet);
-    endResetModel();
+    --currentPageNumber;
+    searchData(currentMissionName,currentPlayerName,currentDate, currentPageNumber);
 }
 
 

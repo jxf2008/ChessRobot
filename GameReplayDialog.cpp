@@ -8,8 +8,10 @@
 #include "GameReplayDialog.h"
 #include "ConstData.h"
 
-GameReplayDialog::GameReplayDialog(QWidget *parent) : QDialog(parent){
+GameReplayDialog::GameReplayDialog(bool* needName , QWidget *parent) :enterMissionName(needName), QDialog(parent){
     setWindowTitle(tr("录像"));
+
+    enterMissionName_CheckBox = new QCheckBox(tr("用户自定义对局名称"));
 
     playerName_Label = new QLabel(tr("玩家名称"));
     missionDate_Label = new QLabel(tr("任务日期"));
@@ -34,14 +36,19 @@ GameReplayDialog::GameReplayDialog(QWidget *parent) : QDialog(parent){
     mission_TableView = new QTableView;
     missionData_Model = new MissionDataModel();
 
+    missionDate_DateEdit->setCalendarPopup(true);
+    missionDate_DateEdit->setDate(QDate::currentDate());
+    missionDate_DateEdit->setFixedSize(20, 20);
+
     playerName_Label->setAlignment(Qt::AlignCenter);
     index_Label->setText("1/1");
 
-    playerName_Label->setFixedWidth(200);
-    missionDate_Label->setFixedWidth(200);
-    missionName_Label->setFixedWidth(200);
-    playerName_LineEdit->setFixedWidth(300);
-    missionName_LineEdit->setFixedWidth(300);
+    playerName_Label->setFixedWidth(100);
+    missionDate_Label->setFixedWidth(100);
+    missionName_Label->setFixedWidth(100);
+    playerName_LineEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    missionName_LineEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    missionDate_LineEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     playerName_Label->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
     missionDate_Label->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
@@ -50,7 +57,8 @@ GameReplayDialog::GameReplayDialog(QWidget *parent) : QDialog(parent){
     mission_TableView->setModel(missionData_Model);
     mission_TableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     mission_TableView->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    mission_TableView->setAutoScroll(false);
+    mission_TableView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    mission_TableView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     mission_TableView->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
     QHBoxLayout* playerName_Layout = new QHBoxLayout;
@@ -70,6 +78,10 @@ GameReplayDialog::GameReplayDialog(QWidget *parent) : QDialog(parent){
     searchButton_Layout->addStretch();
     searchButton_Layout->addWidget(search_PushButton);
 
+    QHBoxLayout* enterName_Layout = new QHBoxLayout;
+    enterName_Layout->addStretch();
+    enterName_Layout->addWidget(enterMissionName_CheckBox);
+
     QVBoxLayout* search_Layout = new QVBoxLayout;
     search_Layout->addLayout(playerName_Layout);
     search_Layout->addLayout(missionName_Layout);
@@ -87,6 +99,7 @@ GameReplayDialog::GameReplayDialog(QWidget *parent) : QDialog(parent){
 
     QVBoxLayout* main_Layout = new QVBoxLayout;
     main_Layout->addWidget(search_GroupBox);
+    main_Layout->addLayout(enterName_Layout);
     main_Layout->addWidget(mission_TableView);
     main_Layout->addLayout(button_Layout);
     setLayout(main_Layout);
@@ -96,24 +109,29 @@ GameReplayDialog::GameReplayDialog(QWidget *parent) : QDialog(parent){
     connect(pageDown_PushButton,SIGNAL(clicked()),this,SLOT(pageDown()));
     connect(search_PushButton,SIGNAL(clicked()),this,SLOT(findMissionData()));
 
+    QString styleStr = "QDateEdit::drop-down{border:0;width:20;height:20;image:url(:/images/Calendar.png)}";
+    styleStr += "QDateEdit{border:0px;padding:0px;background - color:white}";
+    missionDate_DateEdit->setStyleSheet(styleStr);
+
     showModel();
     showModelIndex();
 }
 
 void GameReplayDialog::showModelIndex(){
-    QString gameIndex = QString::number(modelIndex+1)+"/";
-    gameIndex += QString::number((modelCount%MISSION_COUNT_ONTPAGE == 0) ? (modelCount/MISSION_COUNT_ONTPAGE) : (modelCount/MISSION_COUNT_ONTPAGE+1));
+    QString gameIndex = QString::number(modelIndex)+"/";
+    gameIndex += QString::number(modelCount);
     index_Label->setText(gameIndex);
 }
 
 void GameReplayDialog::showModel(const QString& missionNm , const QString& playerNm , const QString& d){
     missionData_Model->searchData(missionNm,playerNm,d);
     modelCount = missionData_Model->getDataCount();
-    modelIndex = missionData_Model->getCurrentOffset();
+    modelIndex = missionData_Model->getCurrentPageNumber();
 }
 
 void GameReplayDialog::closeEvent(QCloseEvent* event){
     event->ignore();
+    *enterMissionName = enterMissionName_CheckBox->isChecked();
     hide();
 }
 
@@ -126,13 +144,13 @@ void GameReplayDialog::findMissionData(){
 
 void GameReplayDialog::pageUp(){
     missionData_Model->pageUp();
-    modelIndex = missionData_Model->getCurrentOffset();
+    modelIndex = missionData_Model->getCurrentPageNumber();
     showModelIndex();
 }
 
 void GameReplayDialog::pageDown(){
     missionData_Model->pageDown();
-    modelIndex = missionData_Model->getCurrentOffset();
+    modelIndex = missionData_Model->getCurrentPageNumber();
     showModelIndex();
 }
 

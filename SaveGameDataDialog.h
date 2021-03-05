@@ -13,13 +13,11 @@ class SaveGameDataDialog : public QDialog{
 private:
     QLabel* isSave_Label;
     QLabel* missionName_Label;
-    QLabel* missionNote_Label;
 
     QRadioButton* save_RadioButton;
     QRadioButton* giveUp_RadioButton;
 
     QLineEdit* missionName_LineEdit;
-    QLineEdit* missionNote_LineEdit;
 
     QPushButton* save_PushButton;
     QPushButton* cancel_PushButton;
@@ -28,7 +26,7 @@ public:
 protected:
     void closeEvent(QCloseEvent* event) override;
 signals:
-    void sameGame(bool save , QString nm , QString note);
+    void sameGame(bool save , QString nm);
 private slots:
     void saveGameData();
     void cancelSave();

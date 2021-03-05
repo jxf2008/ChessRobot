@@ -10,6 +10,7 @@
 #include <QCloseEvent>
 #include <QDateEdit>
 #include <QGroupBox>
+#include <QCheckBox>
 #include "MissionDataModel.h"
 
 class MissionDataModel;
@@ -17,6 +18,10 @@ class MissionDataModel;
 class GameReplayDialog : public QDialog{
     Q_OBJECT
 private:
+    bool* enterMissionName;
+
+    QCheckBox* enterMissionName_CheckBox;
+
     QLabel* playerName_Label;
     QLabel* missionName_Label;
     QLabel* missionDate_Label;
@@ -47,7 +52,7 @@ private:
     void showModelIndex();
     void showModel(const QString& missionNm = QString() , const QString& playerNm = QString() , const QString& d = QString());
 public:
-    explicit GameReplayDialog(QWidget* parent = nullptr);
+    explicit GameReplayDialog(bool* needName , QWidget* parent = nullptr);
 protected:
     void closeEvent(QCloseEvent* event);
 private slots:

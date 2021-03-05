@@ -1,4 +1,4 @@
-#ifdef MSVC
+﻿#ifdef MSVC
 #pragma  execution_character_set("utf-8")
 #endif
 
@@ -6,7 +6,6 @@
 #include <QDateTime>
 #include <QSqlQuery>
 #include <QStringRef>
-#include <QInputDialog>
 #include <QMessageBox>
 #include <QDir>
 #include <QLineEdit>
@@ -35,10 +34,9 @@ ChessMapWidget::ChessMapWidget(QWidget *parent) :
 
     vsLogo_Label = new QLabel("<h1><font color=red>VS</font></h1>");
 
+
     begin_PushButton = new QPushButton(tr("开始"));
-    log_PushButton = new QPushButton(tr("Log"));
     recording_PushButton = new QPushButton(tr("录像"));
-    setting_PushButton = new QPushButton(tr("设置"));
 
     whitePlayerName_PushButton->setFixedSize(LOG_SIZE*3,LOG_SIZE);
     whitePlayerPix_PushButton->setFixedSize(LOG_SIZE,LOG_SIZE);
@@ -74,9 +72,7 @@ ChessMapWidget::ChessMapWidget(QWidget *parent) :
     QVBoxLayout* ctrl_Layout = new QVBoxLayout;
     ctrl_Layout->addStretch();
     ctrl_Layout->addWidget(begin_PushButton);
-    ctrl_Layout->addWidget(log_PushButton);
     ctrl_Layout->addWidget(recording_PushButton);
-    ctrl_Layout->addWidget(setting_PushButton);
     ctrl_Layout->addStretch();
 
     QHBoxLayout* main_Layout = new QHBoxLayout;
@@ -235,22 +231,26 @@ QString ChessMapWidget::getUserPicture(const QString& userName , ChessType tp)co
 
 void ChessMapWidget::saveGameData(){
     QString gameDate = QDateTime::currentDateTime().toString(DATE_FORMAT);
-    QString step;
 
     QSqlQuery sqlQuery;
     sqlQuery.exec("BEGIN;");
     for(int i = 0 ; i < allChess.size() ; ++i){
-        QString sqlStr = "INSERT INTO ChessData (Date,ChessIndex, ChessType) VALUES('DATE','INDEX', 'CHESSTYPE');";
+        if (allChess.at(i)->getChessType() == ChessType::EmptyChess)
+            continue;
+        QString sqlStr = "INSERT INTO ChessData (MissionName,ChessIndex,ChessStep,ChessType) VALUES('DATE','INDEX','STEP', 'CHESSTYPE');";
         sqlStr.replace("DATE",gameDate);
-        sqlStr.replace("INDEX",QString::number(i));
+        sqlStr.replace("INDEX",QString::number(allChess.at(i)->getChessStep()));
+        sqlStr.replace("STEP", QString::number(i));
         sqlStr.replace("CHESSTYPE",QString::number(allChess.at(i)->getChessType()));
         sqlQuery.exec(sqlStr);
     }
     sqlQuery.exec("COMMIT;");
-    QString sqlStr = "INSERT INTO PlayerData(Date,BlackPlayerName, WhitePlayerName) VALUES('DATE','BLACKNAME', 'WHITENAME');";
-    sqlStr.replace("DATE",gameDate);
+    QString sqlStr = "INSERT INTO PlayerData(MissionName,BlackPlayerName, WhitePlayerName,Winner,Date) VALUES('MISSIONNAME','BLACKNAME', 'WHITENAME','WINNER','DATE');";
+    sqlStr.replace("MISSIONNAME", gameDate);
     sqlStr.replace("BLACKNAME",blackPlayerName);
     sqlStr.replace("WHITENAME",whitePlayerName);
+    sqlStr.replace("WINNER", currentType == ChessType::BlackChess ? blackPlayerName : whitePlayerName);
+    sqlStr.replace("DATE", gameDate);
     sqlQuery.exec(sqlStr);
 }
 
@@ -357,10 +357,7 @@ void ChessMapWidget::beginGame(){
 
 void ChessMapWidget::initMap(){
     if(playingBool){
-        QString gameDate = QDateTime::currentDateTime().toString(DATE_FORMAT);
-        bool customNm = true;
-        QString resTxt = QInputDialog::getText(this,tr("对局名称"),gameDate,QLineEdit::Normal,QDir::home().dirName(),&customNm);
-        if(customNm && !resTxt.isEmpty())saveGameData();
+        saveGameData();
 
         playingBool = false;
         begin_PushButton->setEnabled(true);
@@ -391,6 +388,6 @@ void ChessMapWidget::initMap(){
 
 void ChessMapWidget::chooseReplay(){
     if(gameReplay_Dialog == nullptr)
-        gameReplay_Dialog = new GameReplayDialog(this);
+        gameReplay_Dialog = new GameReplayDialog(&enterMissionName,this);
     gameReplay_Dialog->exec();
 }

@@ -9,6 +9,9 @@ class ChessButton : public QPushButton
 {
     Q_OBJECT
 private:
+    static int stepCount;
+    int currentStep = -1;
+    int chessStep;
     int chessNumberInt;
     ChessType chessType;
     ChessType userClickType;
@@ -33,6 +36,7 @@ public:
     void setAllowClick(bool fg);
     bool buttonStatu()const;
     void setUserClickType(ChessType userType);
+    int getChessStep()const { return currentStep; };
 protected:
     void mousePressEvent(QMouseEvent* event);
 signals:
