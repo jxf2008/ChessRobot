@@ -25,7 +25,7 @@ public:
     int columnCount(const QModelIndex& index)const;
     QVariant data(const QModelIndex& index , int role)const;
     QVariant headerData(int sec , Qt::Orientation orientation , int role)const;
-    void searchData(const QString& missionNm = QString() , const QString& playerNm = QString() , const QString& d = QString() , int offset = 0);
+    void searchData(const QString& missionNm = QString() , const QString& playerNm = QString() , const QString& d = QString());
     int getCurrentPageNumber()const{return currentPageNumber;}
     int getDataCount();
     void clearModel();

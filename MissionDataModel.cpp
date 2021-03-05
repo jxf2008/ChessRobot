@@ -31,19 +31,18 @@ QVariant MissionDataModel::data(const QModelIndex& index , int role)const{
         return QVariant();
 
     if(role == Qt::DisplayRole){
-        int currentOffSet = currentPageNumber - 1;
         int r = index.row();
         int c = index.column();
-        if((r + currentOffSet * MISSION_COUNT_ONTPAGE) >= dates.size())
+        if(r >= dates.size())
             return QVariant();
         if (c == 0)
-            return QVariant(missionNames.at(r + currentOffSet * MISSION_COUNT_ONTPAGE));
+            return QVariant(missionNames.at(r));
         if (c == 1)
-            return QVariant(blackPlayerNames.at(r + currentOffSet * MISSION_COUNT_ONTPAGE));
+            return QVariant(blackPlayerNames.at(r));
         if (c == 2)
-            return QVariant(whitePlayerNames.at(r + currentOffSet * MISSION_COUNT_ONTPAGE));
+            return QVariant(whitePlayerNames.at(r));
         if (c == 3)
-            return QVariant(dates.at(r + currentOffSet * MISSION_COUNT_ONTPAGE));
+            return QVariant(dates.at(r));
     }
     if(role == Qt::TextAlignmentRole)
         return QVariant(Qt::AlignCenter);
@@ -59,7 +58,7 @@ QVariant MissionDataModel::headerData(int sec , Qt::Orientation orientation , in
     return QVariant();
 }
 
-void MissionDataModel::searchData(const QString& missionNm , const QString& playerNm , const QString& d , int offset){
+void MissionDataModel::searchData(const QString& missionNm , const QString& playerNm , const QString& d){
     currentMissionName = missionNm;
     currentPlayerName = playerNm;
     currentDate = d;
@@ -69,12 +68,11 @@ void MissionDataModel::searchData(const QString& missionNm , const QString& play
     QString cd0 = missionNm.isEmpty() ? "0=0" : "MissionName='"+missionNm+"'";
     QString cd1 = playerNm.isEmpty() ? "0=0" : "(BlackPlayerName='"+missionNm+"' OR WhitePlayerName='"+missionNm+"')";
     QString cd2 = d.isEmpty() ? "0=0" : "Date='"+d+"'";
-    QString lim0 = QString::number(MISSION_COUNT_ONTPAGE * (currentPageNumber-1));
+    QString lim0 = QString::number(MISSION_COUNT_ONTPAGE * (currentPageNumber - 1));
     sqlStr.replace("CD0",cd0);
     sqlStr.replace("CD1",cd1);
     sqlStr.replace("CD2",cd2);
     sqlStr.replace("LIM0",lim0);
-    qDebug() << sqlStr;
 
     QSqlQuery sqlQuery;
     sqlQuery.exec(sqlStr);
@@ -115,21 +113,17 @@ void MissionDataModel::clearModel(){
 }
 
 void MissionDataModel::pageDown(){
-    qDebug() << "currentPageNumber:" << currentPageNumber;
-    qDebug() << "dataCount:" << dataCount;
-    if(currentPageNumber = dataCount)
+    if(currentPageNumber == dataCount)
         return;
     ++currentPageNumber;
-    searchData(currentMissionName,currentPlayerName,currentDate, currentPageNumber);
+    searchData(currentMissionName,currentPlayerName,currentDate);
 }
 
 void MissionDataModel::pageUp(){
-    qDebug() << "currentPageNumber:" << currentPageNumber;
-    qDebug() << "dataCount:" << dataCount;
     if(currentPageNumber == 1)
         return;
     --currentPageNumber;
-    searchData(currentMissionName,currentPlayerName,currentDate, currentPageNumber);
+    searchData(currentMissionName,currentPlayerName,currentDate);
 }
 
 
