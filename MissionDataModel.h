@@ -8,12 +8,10 @@ class MissionDataModel : public QAbstractTableModel{
 private:
     QVector<QString> titles;
 
-    QVector<QString> missionNames;
     QVector<QString> blackPlayerNames;
     QVector<QString> whitePlayerNames;
     QVector<QString> dates;
 
-    QString currentMissionName = "";
     QString currentPlayerName = "";
     QString currentDate = "";
 

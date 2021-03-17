@@ -65,6 +65,7 @@ struct GameInfo{
     QString WhitePlayerName;
 };
 
+const QString MISSION_NAME_EMPTY = "MissionNameEmpty";  //这个版本暂时不支持命名对局名称，对局名称在数据库中填写的是日期，下个版本再加u人
 #endif // CONSTDATA_H
 
 

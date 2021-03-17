@@ -10,7 +10,6 @@ MissionDataModel::MissionDataModel(QObject* parent):QAbstractTableModel (parent)
                                                     blackPlayerNames(MISSION_COUNT_ONTPAGE,""),
                                                     whitePlayerNames(MISSION_COUNT_ONTPAGE,""),
                                                     dates(MISSION_COUNT_ONTPAGE,""){
-    titles.append(tr("对局名称"));
     titles.append(tr("黑棋"));
     titles.append(tr("白棋"));
     titles.append(tr("日期"));
@@ -35,13 +34,11 @@ QVariant MissionDataModel::data(const QModelIndex& index , int role)const{
         int c = index.column();
         if(r >= dates.size())
             return QVariant();
-        if (c == 0)
-            return QVariant(missionNames.at(r));
         if (c == 1)
             return QVariant(blackPlayerNames.at(r));
         if (c == 2)
             return QVariant(whitePlayerNames.at(r));
-        if (c == 3)
+        if (c == 0)
             return QVariant(dates.at(r));
     }
     if(role == Qt::TextAlignmentRole)
@@ -59,7 +56,6 @@ QVariant MissionDataModel::headerData(int sec , Qt::Orientation orientation , in
 }
 
 void MissionDataModel::searchData(const QString& missionNm , const QString& playerNm , const QString& d){
-    currentMissionName = missionNm;
     currentPlayerName = playerNm;
     currentDate = d;
 
@@ -78,12 +74,10 @@ void MissionDataModel::searchData(const QString& missionNm , const QString& play
     sqlQuery.exec(sqlStr);
 
     beginResetModel();
-    missionNames.clear();
     blackPlayerNames.clear();
     whitePlayerNames.clear();
     dates.clear();
     while (sqlQuery.next()) {
-        missionNames.append(sqlQuery.value("MissionName").toString());
         blackPlayerNames.append(sqlQuery.value("BlackPlayerName").toString());
         whitePlayerNames.append(sqlQuery.value("WhitePlayerName").toString());
         dates.append(sqlQuery.value("Date").toString());
@@ -106,7 +100,6 @@ void MissionDataModel::clearModel(){
     dates.clear();
     blackPlayerNames.clear();
     whitePlayerNames.clear();
-    missionNames.clear();
     currentPageNumber = 1;
     dataCount = 0;
     endResetModel();
@@ -116,14 +109,14 @@ void MissionDataModel::pageDown(){
     if(currentPageNumber == dataCount)
         return;
     ++currentPageNumber;
-    searchData(currentMissionName,currentPlayerName,currentDate);
+    searchData("",currentPlayerName,currentDate);
 }
 
 void MissionDataModel::pageUp(){
     if(currentPageNumber == 1)
         return;
     --currentPageNumber;
-    searchData(currentMissionName,currentPlayerName,currentDate);
+    searchData("",currentPlayerName,currentDate);
 }
 
 

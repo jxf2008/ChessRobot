@@ -8,14 +8,10 @@
 #include "GameReplayDialog.h"
 #include "ConstData.h"
 
-GameReplayDialog::GameReplayDialog(bool* needName , QWidget *parent) :enterMissionName(needName), QDialog(parent){
+GameReplayDialog::GameReplayDialog(QWidget *parent) :QDialog(parent){
     setWindowTitle(tr("录像"));
-
-    enterMissionName_CheckBox = new QCheckBox(tr("用户自定义对局名称"));
-
     playerName_Label = new QLabel(tr("玩家名称"));
     missionDate_Label = new QLabel(tr("任务日期"));
-    missionName_Label = new QLabel(tr("对局名称"));
     pageCount_Label = new QLabel();
 
     search_PushButton = new QPushButton(tr("查找"));
@@ -26,7 +22,6 @@ GameReplayDialog::GameReplayDialog(bool* needName , QWidget *parent) :enterMissi
     index_Label = new QLabel();
 
     playerName_LineEdit = new QLineEdit();
-    missionName_LineEdit = new QLineEdit();
     missionDate_LineEdit = new QLineEdit();
 
     missionDate_DateEdit = new QDateEdit();
@@ -45,14 +40,11 @@ GameReplayDialog::GameReplayDialog(bool* needName , QWidget *parent) :enterMissi
 
     playerName_Label->setFixedWidth(100);
     missionDate_Label->setFixedWidth(100);
-    missionName_Label->setFixedWidth(100);
     playerName_LineEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    missionName_LineEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     missionDate_LineEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     playerName_Label->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
     missionDate_Label->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
-    missionName_Label->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
 
     mission_TableView->setModel(missionData_Model);
     mission_TableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
@@ -65,10 +57,6 @@ GameReplayDialog::GameReplayDialog(bool* needName , QWidget *parent) :enterMissi
     playerName_Layout->addWidget(playerName_Label);
     playerName_Layout->addWidget(playerName_LineEdit);
 
-    QHBoxLayout* missionName_Layout = new QHBoxLayout;
-    missionName_Layout->addWidget(missionName_Label);
-    missionName_Layout->addWidget(missionName_LineEdit);
-
     QHBoxLayout* missionDate_Layout = new QHBoxLayout;
     missionDate_Layout->addWidget(missionDate_Label);
     missionDate_Layout->addWidget(missionDate_LineEdit);
@@ -78,13 +66,8 @@ GameReplayDialog::GameReplayDialog(bool* needName , QWidget *parent) :enterMissi
     searchButton_Layout->addStretch();
     searchButton_Layout->addWidget(search_PushButton);
 
-    QHBoxLayout* enterName_Layout = new QHBoxLayout;
-    enterName_Layout->addStretch();
-    enterName_Layout->addWidget(enterMissionName_CheckBox);
-
     QVBoxLayout* search_Layout = new QVBoxLayout;
     search_Layout->addLayout(playerName_Layout);
-    search_Layout->addLayout(missionName_Layout);
     search_Layout->addLayout(missionDate_Layout);
     search_Layout->addLayout(searchButton_Layout);
     search_GroupBox->setLayout(search_Layout);
@@ -99,7 +82,6 @@ GameReplayDialog::GameReplayDialog(bool* needName , QWidget *parent) :enterMissi
 
     QVBoxLayout* main_Layout = new QVBoxLayout;
     main_Layout->addWidget(search_GroupBox);
-    main_Layout->addLayout(enterName_Layout);
     main_Layout->addWidget(mission_TableView);
     main_Layout->addLayout(button_Layout);
     setLayout(main_Layout);
@@ -118,6 +100,10 @@ GameReplayDialog::GameReplayDialog(bool* needName , QWidget *parent) :enterMissi
 }
 
 void GameReplayDialog::showModelIndex(){
+    if(modelCount == 0){
+        index_Label->setText(tr("0/0"));
+        return;
+    }
     QString gameIndex = QString::number(modelIndex)+"/";
     gameIndex += QString::number(modelCount);
     index_Label->setText(gameIndex);
@@ -131,20 +117,20 @@ void GameReplayDialog::showModel(const QString& missionNm , const QString& playe
 
 void GameReplayDialog::closeEvent(QCloseEvent* event){
     event->ignore();
-    *enterMissionName = enterMissionName_CheckBox->isChecked();
+    missionData_Model->clearModel();
     hide();
 }
 
 void GameReplayDialog::findMissionData(){
-    QString missionName = missionName_LineEdit->text();
     QString playerName = playerName_LineEdit->text();
     QString missionDate = missionDate_LineEdit->text();
-    showModel(missionName,playerName,missionDate);
+    showModel("",playerName,missionDate);
 }
 
 void GameReplayDialog::pageUp(){
     missionData_Model->pageUp();
     modelIndex = missionData_Model->getCurrentPageNumber();
+    index_Label->setText("1/1");
     showModelIndex();
 }
 

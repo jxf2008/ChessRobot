@@ -18,12 +18,7 @@ class MissionDataModel;
 class GameReplayDialog : public QDialog{
     Q_OBJECT
 private:
-    bool* enterMissionName;
-
-    QCheckBox* enterMissionName_CheckBox;
-
     QLabel* playerName_Label;
-    QLabel* missionName_Label;
     QLabel* missionDate_Label;
     QLabel* pageCount_Label;
 
@@ -35,7 +30,6 @@ private:
     QLabel* index_Label;
 
     QLineEdit* playerName_LineEdit;
-    QLineEdit* missionName_LineEdit;
     QLineEdit* missionDate_LineEdit;
 
     QTableView* mission_TableView;
@@ -52,7 +46,7 @@ private:
     void showModelIndex();
     void showModel(const QString& missionNm = QString() , const QString& playerNm = QString() , const QString& d = QString());
 public:
-    explicit GameReplayDialog(bool* needName , QWidget* parent = nullptr);
+    explicit GameReplayDialog(QWidget* parent = nullptr);
 protected:
     void closeEvent(QCloseEvent* event);
 private slots:

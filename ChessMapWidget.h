@@ -17,7 +17,6 @@ class ChessMapWidget : public QWidget
     Q_OBJECT
 private:
     bool playingBool;
-    bool enterMissionName = false;
 
     ChoosePlayerDialog* choosePlayer_Dialog;
 

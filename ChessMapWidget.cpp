@@ -388,6 +388,6 @@ void ChessMapWidget::initMap(){
 
 void ChessMapWidget::chooseReplay(){
     if(gameReplay_Dialog == nullptr)
-        gameReplay_Dialog = new GameReplayDialog(&enterMissionName,this);
+        gameReplay_Dialog = new GameReplayDialog(this);
     gameReplay_Dialog->exec();
 }
