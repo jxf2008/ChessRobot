@@ -35,7 +35,6 @@ SOURCES += \
         ChoosePlayerDialog.cpp \
         GameReplayDialog.cpp \
         MissionDataModel.cpp \
-        SaveGameDataDialog.cpp \
         main.cpp \
         ChessRobert.cpp \
         InitBuilder.cpp
@@ -52,8 +51,7 @@ HEADERS += \
         ConstData.h \
         InitBuilder.h \
         ConstData.h \
-        MissionDataModel.h \
-        SaveGameDataDialog.h
+        MissionDataModel.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

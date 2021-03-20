@@ -86,8 +86,16 @@ ChessMapWidget::ChessMapWidget(QWidget *parent) :
     connect(begin_PushButton,SIGNAL(clicked()),this,SLOT(beginGame()));
     connect(recording_PushButton,SIGNAL(clicked()),this,SLOT(chooseReplay()));
 
-    whitePlayerName_PushButton->setStyleSheet("font-size:20px");
-    blackPlayerName_PushButton->setStyleSheet("background-color:black;color:white;font-size:20px");
+    whitePlayerName_PushButton->setStyleSheet("border-radius:5px;border:2px solid rgb(106,166,155);font-size:20px");
+    blackPlayerName_PushButton->setStyleSheet("border-radius:5px;border:2px solid rgb(106,166,155);background-color:black;color:white;font-size:20px");
+
+    QString buttonStyleStr = "QPushButton{width:120;height:40;font-size:20px}";
+    buttonStyleStr += "QPushButton{border-radius:5px;border:2px solid rgb(106,166,155);background-color:rgb(142,136,116)} ";
+    buttonStyleStr += "QPushButton:!enabled{background-color:rgb(191,183,174)} ";
+    buttonStyleStr += "QPushButton:hover{border:1px solid rgb(46,75,70)} ";
+    buttonStyleStr += "QPushButton:!hover{border:1px solid rgb(106,166,155)} ";
+    begin_PushButton->setStyleSheet(buttonStyleStr);
+    recording_PushButton->setStyleSheet(buttonStyleStr);
 
     initMap();
 }

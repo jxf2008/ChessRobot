@@ -71,6 +71,10 @@ void InitBuilder::createFile(){
     sqlQuery.exec(sqlStr);
 }
 
+void InitBuilder::createQss(){
+
+}
+
 
 
 

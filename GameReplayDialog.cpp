@@ -46,6 +46,8 @@ GameReplayDialog::GameReplayDialog(QWidget *parent) :QDialog(parent){
     playerName_Label->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
     missionDate_Label->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
 
+    mission_TableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+
     mission_TableView->setModel(missionData_Model);
     mission_TableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     mission_TableView->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
@@ -91,53 +93,49 @@ GameReplayDialog::GameReplayDialog(QWidget *parent) :QDialog(parent){
     connect(pageDown_PushButton,SIGNAL(clicked()),this,SLOT(pageDown()));
     connect(search_PushButton,SIGNAL(clicked()),this,SLOT(findMissionData()));
 
-    QString styleStr = "QDateEdit::drop-down{border:0;width:20;height:20;image:url(:/images/Calendar.png)}";
-    styleStr += "QDateEdit{border:0px;padding:0px;background - color:white}";
-    missionDate_DateEdit->setStyleSheet(styleStr);
+    missionData_Model->selectData();
+    setIndex(missionData_Model->getCurrentPageNumber(),missionData_Model->getDataCount());
 
-    showModel();
-    showModelIndex();
+    QString styleStr = "QDateEdit::drop-down{border:0;width:20;height:20;image:url(:/images/Calendar.png)} ";
+    styleStr += "QDateEdit{border:0px;padding:0px;background - color:white} ";
+    styleStr += "QTableView{gridline-color:black} ";
+    styleStr += "QHeaderView::section{background-color:rgb(160,205,166)} ";
+    styleStr += "QTableView QTableCornerButton::section{background-color:rgb(160,205,166)} ";
+    styleStr += "QDialog{background-color:rgb(152,189,192)} ";
+    styleStr += "QPushButton{width:120;height:40;font-size:20px}";
+    styleStr += "QPushButton{border-radius:5px;border:1px solid rgb(106,166,155);background-color:rgb(142,136,116)} ";
+    styleStr += "QPushButton:!enabled{background-color:rgb(191,183,174)} ";
+    styleStr += "QPushButton:hover{border:1px solid rgb(46,75,70)} ";
+    styleStr += "QPushButton:!hover{border:1px solid rgb(106,166,155)} ";
+    setStyleSheet(styleStr);
 }
 
-void GameReplayDialog::showModelIndex(){
-    if(modelCount == 0){
-        index_Label->setText(tr("0/0"));
-        return;
-    }
-    QString gameIndex = QString::number(modelIndex)+"/";
-    gameIndex += QString::number(modelCount);
-    index_Label->setText(gameIndex);
-}
-
-void GameReplayDialog::showModel(const QString& missionNm , const QString& playerNm , const QString& d){
-    missionData_Model->searchData(missionNm,playerNm,d);
-    modelCount = missionData_Model->getDataCount();
-    modelIndex = missionData_Model->getCurrentPageNumber();
+void GameReplayDialog::setIndex(int index , int count){
+    int pageCount = count % MISSION_COUNT_ONEPAGE == 0 ? (count / MISSION_COUNT_ONEPAGE) : (count / MISSION_COUNT_ONEPAGE + 1);
+    index_Label->setText(QString::number(index) + "/" + QString::number(pageCount));
 }
 
 void GameReplayDialog::closeEvent(QCloseEvent* event){
     event->ignore();
-    missionData_Model->clearModel();
+    missionData_Model->selectData();
+    setIndex(missionData_Model->getCurrentPageNumber(),missionData_Model->getDataCount());
     hide();
 }
 
 void GameReplayDialog::findMissionData(){
     QString playerName = playerName_LineEdit->text();
     QString missionDate = missionDate_LineEdit->text();
-    showModel("",playerName,missionDate);
+    missionData_Model->selectData(playerName,missionDate);
 }
 
 void GameReplayDialog::pageUp(){
     missionData_Model->pageUp();
-    modelIndex = missionData_Model->getCurrentPageNumber();
-    index_Label->setText("1/1");
-    showModelIndex();
+    setIndex(missionData_Model->getCurrentPageNumber(),missionData_Model->getDataCount());
 }
 
 void GameReplayDialog::pageDown(){
     missionData_Model->pageDown();
-    modelIndex = missionData_Model->getCurrentPageNumber();
-    showModelIndex();
+    setIndex(missionData_Model->getCurrentPageNumber(),missionData_Model->getDataCount());
 }
 
 

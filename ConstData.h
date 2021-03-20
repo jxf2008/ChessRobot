@@ -11,15 +11,13 @@ const QString EXE_ICO = ":/images/TitleImage.png";
 
 const QString DATE_FORMAT = "yyyy-MM-dd hh:mm:ss";
 
-enum ChessType
-{
+enum ChessType{
     BlackChess,
     WhiteChess,
     EmptyChess
 };
 
-struct ChessDetail
-{
+struct ChessDetail{
     int row;
     int col;
     int verLine;   //每个旗子在4个方向上的数量，如果这条线2个对方的棋子小于5，则该值为-1
@@ -58,14 +56,14 @@ const QString AI_LIBARY_FILE = ".dylib";
 typedef int (*CALCULATECHESS)(int* , int , int);
 const QString AI_FUN_NAME = "calculateChess";
 
-const int MISSION_COUNT_ONTPAGE = 10;
+const int MISSION_COUNT_ONEPAGE = 10;
 struct GameInfo{
     QString GameName;
     QString BlackPlayerName;
     QString WhitePlayerName;
 };
 
-const QString MISSION_NAME_EMPTY = "MissionNameEmpty";  //这个版本暂时不支持命名对局名称，对局名称在数据库中填写的是日期，下个版本再加u人
+const QString MISSION_NAME_EMPTY = "MissionNameEmpty";  //这个版本暂时不支持命名对局名称，对局名称在数据库中填写的是日期，下个版本再加人
 #endif // CONSTDATA_H
 
 

@@ -5,7 +5,6 @@
 #include "ChessButton.h"
 #include "ChoosePlayerDialog.h"
 #include "GameReplayDialog.h"
-#include "SaveGameDataDialog.h"
 
 class ChessButton;
 class ChoosePlayerDialog;

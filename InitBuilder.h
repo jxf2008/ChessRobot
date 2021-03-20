@@ -16,6 +16,7 @@ public:
     QString getAIDir()const;
     QString getAIPictureDir()const;
     void createFile();
+    void createQss();
 };
 
 #endif

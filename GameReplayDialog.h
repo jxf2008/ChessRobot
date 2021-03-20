@@ -40,11 +40,7 @@ private:
 
     MissionDataModel* missionData_Model;
 
-    int modelCount = 0;
-    int modelIndex = 0;
-
-    void showModelIndex();
-    void showModel(const QString& missionNm = QString() , const QString& playerNm = QString() , const QString& d = QString());
+    void setIndex(int index , int count);
 public:
     explicit GameReplayDialog(QWidget* parent = nullptr);
 protected:

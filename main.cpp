@@ -1,19 +1,14 @@
-#include "ChessRobert.h"
 #include <QApplication>
+#include "ChessRobert.h"
+#include "InitBuilder.h"
+
+class InitBuilder;
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    /*QString qssFilePath = QCoreApplication::applicationDirPath() + "/" + "AppStyle.qss";
-    qssFilePath = "E:/";
-    qssFilePath += "AppStyle.qss";
-    QFile qssFile(qssFilePath);
-    qssFile.open(QIODevice::ReadOnly);
-    QTextStream textStream(&qssFile);
-    QString styleStr = textStream.readAll();
-    a.setStyleSheet(styleStr);*/
+    InitBuilder::getInstance().createFile();
     ChessRobert w;
     w.show();
-
     return a.exec();
 }
