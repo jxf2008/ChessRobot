@@ -8,8 +8,7 @@
 #include <QCloseEvent>
 #include "ConstData.h"
 
-class ChoosePlayerDialog : public QDialog
-{
+class ChoosePlayerDialog : public QDialog{
     Q_OBJECT
 private:
     ChessType playerType;

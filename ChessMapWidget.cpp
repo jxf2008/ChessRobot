@@ -58,7 +58,7 @@ ChessMapWidget::ChessMapWidget(QWidget *parent) :
             allChess.append(new ChessButton(rows*CHESS_COUNT+cols));
             allChess.last()->setFixedSize(CHESS_SIZE,CHESS_SIZE);
             allChess.last()->setChessType(ChessType::EmptyChess);
-            allChess.last()->setStyleSheet("border: 1px solid black;");
+            allChess.last()->setStyleSheet("border: 1px solid black");
             allChess.last()->setUserClickType(ChessType::BlackChess);
             connect(allChess.last(),SIGNAL(userHadClicked(int)),this,SLOT(userClickChess(int)));
             chess_Layout->addWidget(allChess.last(),rows,cols);
@@ -262,7 +262,8 @@ void ChessMapWidget::saveGameData(){
     sqlQuery.exec(sqlStr);
 }
 
-void ChessMapWidget::userClickChess(int number){
+void ChessMapWidget::userClickChess(int nu){
+    Q_UNUSED(nu)
     for(auto A : allChess)
         A->setAllowClick(false);
     int cs = chessJudgment();

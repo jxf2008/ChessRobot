@@ -19,6 +19,7 @@ class GameReplayDialog : public QDialog{
     Q_OBJECT
 private:
     QLabel* playerName_Label;
+    QLabel* missionDateBegin_Label;
     QLabel* missionDate_Label;
     QLabel* pageCount_Label;
 
@@ -49,6 +50,7 @@ private slots:
     void findMissionData();
     void pageUp();
     void pageDown();
+    void chooseMissionData(const QDateTime& datetime);
 };
 
 #endif // GAMEREPLAYWIDGET_H

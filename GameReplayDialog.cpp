@@ -92,6 +92,7 @@ GameReplayDialog::GameReplayDialog(QWidget *parent) :QDialog(parent){
     connect(pageUp_PushButton,SIGNAL(clicked()),this,SLOT(pageUp()));
     connect(pageDown_PushButton,SIGNAL(clicked()),this,SLOT(pageDown()));
     connect(search_PushButton,SIGNAL(clicked()),this,SLOT(findMissionData()));
+    connect(missionDate_DateEdit,SIGNAL(dateTimeChanged(const QDateTime&)),this,SLOT(chooseMissionData(const QDateTime&)));
 
     missionData_Model->selectData();
     setIndex(missionData_Model->getCurrentPageNumber(),missionData_Model->getDataCount());
@@ -136,6 +137,10 @@ void GameReplayDialog::pageUp(){
 void GameReplayDialog::pageDown(){
     missionData_Model->pageDown();
     setIndex(missionData_Model->getCurrentPageNumber(),missionData_Model->getDataCount());
+}
+
+void GameReplayDialog::chooseMissionData(const QDateTime& datetime){
+    missionDate_LineEdit->setText(datetime.toString(DATE_FORMAT));
 }
 
 

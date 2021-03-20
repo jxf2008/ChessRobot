@@ -49,7 +49,7 @@ private:
 public:
     explicit ChessMapWidget(QWidget *parent = nullptr);
 private slots:
-    void userClickChess(int number);
+    void userClickChess(int nu);
     void aiClickChess(int indexs);
     void chooseWhitePlayer();
     void chooseBlackPlayer();
